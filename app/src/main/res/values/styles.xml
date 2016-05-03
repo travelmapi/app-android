@@ -3,14 +3,46 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@android:color/white</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-    <style name="AppTheme.title" >
+    <style name="AppTheme.Title" >
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">24sp</item>
-        <item name="android:background"></item>
-
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+    <style name="AppTheme.Label">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:layout_marginStart">@dimen/activity_horizontal_margin</item>
+        <item name="android:layout_marginEnd">@dimen/activity_horizontal_margin</item>
+        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="AppTheme.EditText">
+        <item name="android:background">@drawable/bordered_background</item>
+        <item name="android:layout_marginStart">@dimen/activity_horizontal_margin</item>
+        <item name="android:layout_marginEnd">@dimen/activity_horizontal_margin</item>
+        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+    <style name="AppTheme.Button">
+        <item name="android:layout_marginStart">@dimen/activity_horizontal_margin</item>
+        <item name="android:layout_marginEnd">@dimen/activity_horizontal_margin</item>
+        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:height">18dp</item>
+    </style>
+    <style name="AppTheme.MenuButton">
+        <item name="android:background">@drawable/bordered_background</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+    <style name="AppTheme.MenuButton.Active">
+        <item name="android:background">@drawable/bordered_background_active</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>
