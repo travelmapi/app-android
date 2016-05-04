@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+<Button
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    style="@style/AppTheme.MenuButton"
+    android:text="Show log"/>
+<Button
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    style="@style/AppTheme.MenuButton.Active"
+    android:text="Start travel"/>
+<Button
+    android:id="@+id/activity_start_travel_button_list"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    style="@style/AppTheme.MenuButton"
+    android:text="Travels list"/>
+<Button
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    style="@style/AppTheme.MenuButton"
+    android:text="Settings"/>
+</LinearLayout>
