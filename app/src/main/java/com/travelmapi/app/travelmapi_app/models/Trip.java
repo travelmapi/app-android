@@ -57,4 +57,6 @@ public class Trip extends RealmObject {
     public void setEnd(Date end) {
         this.end = end;
     }
+
+
 }

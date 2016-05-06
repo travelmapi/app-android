@@ -24,15 +24,21 @@ import io.realm.RealmResults;
  */
 public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerViewAdapter.TripViewHolder> implements View.OnClickListener {
 
+    public interface OnTripRowClickListener{
+        void onTripRowClicked(Trip trip);
+    }
+
+
     private static final String TAG = TripRecyclerViewAdapter.class.getSimpleName();
     RealmResults<Trip> mTrips;
     ArrayList<String> selected;
-
-    public TripRecyclerViewAdapter(){
+    OnTripRowClickListener mListener;
+    public TripRecyclerViewAdapter(OnTripRowClickListener listener){
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<Trip> query = realm.where(Trip.class);
         mTrips =  query.findAll();
         selected = new ArrayList<>();
+        this.mListener = listener;
     }
 
     @Override
@@ -43,7 +49,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
     }
 
     @Override
-    public void onBindViewHolder(TripViewHolder holder, int position) {
+    public void onBindViewHolder(final TripViewHolder holder, int position) {
         Trip trip = mTrips.get(position);
         holder.title.setText(trip.getName());
         String dates = String.format("from %s to %s",trip.getStart().toString(), trip.getEnd().toString());
@@ -51,6 +57,14 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         holder.check.setChecked(selected.contains(position));
         holder.check.setOnClickListener(this);
         holder.check.setTag(trip);
+        holder.fullView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mListener != null){
+                    mListener.onTripRowClicked(mTrips.get(holder.getAdapterPosition()));
+                }
+            }
+        });
     }
 
     @Override
@@ -73,11 +87,13 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
     static class TripViewHolder extends RecyclerView.ViewHolder {
         TextView title, dates;
         CheckBox check;
+        View fullView;
         public TripViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.row_trip_textview_title);
             dates = (TextView) itemView.findViewById(R.id.row_trip_textview_dates);
             check = (CheckBox) itemView.findViewById(R.id.row_trip_checkbox_delete);
+            fullView = itemView;
         }
     }
 

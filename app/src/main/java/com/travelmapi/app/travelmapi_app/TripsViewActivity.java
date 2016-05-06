@@ -1,5 +1,6 @@
 package com.travelmapi.app.travelmapi_app;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -16,8 +17,9 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class TripsViewActivity extends AppCompatActivity {
+public class TripsViewActivity extends AppCompatActivity implements TripRecyclerViewAdapter.OnTripRowClickListener{
 
+    public static final String ARG_TRIP = "ARG_TRIP";
     TripRecyclerViewAdapter mAdapter;
 
     @BindView(R.id.activity_trips_view_recycler_view)
@@ -28,7 +30,7 @@ public class TripsViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trips_view);
         ButterKnife.bind(this);
-        mAdapter = new TripRecyclerViewAdapter();
+        mAdapter = new TripRecyclerViewAdapter(this);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setItemAnimator(new DefaultItemAnimator());
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -49,5 +51,12 @@ public class TripsViewActivity extends AppCompatActivity {
             mAdapter.notifyDataSetChanged();
 
         }
+    }
+
+    @Override
+    public void onTripRowClicked(Trip trip) {
+        Intent intent = new Intent(this, TripDetailActivity.class);
+        intent.putExtra(ARG_TRIP, trip.getId());
+        startActivity(intent);
     }
 }

@@ -1,13 +1,23 @@
 package com.travelmapi.app.travelmapi_app;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.Application;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.SystemClock;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.travelmapi.app.travelmapi_app.alarms.AlarmReceiver;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 
 import java.text.ParseException;
@@ -25,6 +35,7 @@ public class StartTravelActivity extends AppCompatActivity  {
 
 
     private static final String TAG = StartTravelActivity.class.getSimpleName();
+    private static final int PERMISSION_FINE_LOCATION = 0;
 
     @BindView(R.id.activity_start_travel_edittext_trip_end)
     public EditText mEditEnd;
@@ -35,11 +46,42 @@ public class StartTravelActivity extends AppCompatActivity  {
     @BindView(R.id.activity_start_travel_edittext_trip_name)
     public EditText mEditName;
 
+    private PendingIntent pendingIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_travel);
         ButterKnife.bind(this);
+
+
+//        if(Build.VERSION.SDK_INT >= 23) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSION_FINE_LOCATION);
+//        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch(requestCode){
+            case 0:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Intent alarmIntent = new Intent(StartTravelActivity.this, AlarmReceiver.class);
+                    pendingIntent = PendingIntent.getBroadcast(StartTravelActivity.this, 0, alarmIntent, 0);
+
+                    AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    int interval = 8000;
+
+                    manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+                    Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                break;
+
+        }
     }
 
     @OnClick(R.id.activity_start_travel_button_save)

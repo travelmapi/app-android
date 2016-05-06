@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.travelmapi.app.travelmapi_app">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+
     <application
         android:name=".ApplicationSingleton"
         android:allowBackup="true"
@@ -12,11 +19,26 @@
         <activity android:name=".StartTravelActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TripsViewActivity"></activity>
+        <activity android:name=".TripsViewActivity" />
+        <activity android:name=".TripDetailActivity" />
+
+        <receiver android:name=".alarms.AlarmReceiver" />
+        <receiver
+            android:name=".alarms.BootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".alarms.AlarmReceiver" />
+
+        <service
+            android:name=".alarms.AlarmService"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>
