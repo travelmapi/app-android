@@ -8,11 +8,21 @@ import io.realm.RealmObject;
  * Created by sam on 5/3/16.
  */
 public class TravelStamp extends RealmObject {
+
+    private int id;
     private Date timestamp;
     private double lat;
     private double lon;
     private boolean sync;
     private Date syncDate;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public double getLat() {
         return lat;
@@ -37,6 +47,7 @@ public class TravelStamp extends RealmObject {
     public void setSync(boolean sync) {
         this.sync = sync;
     }
+
 
     public Date getSyncDate() {
         return syncDate;

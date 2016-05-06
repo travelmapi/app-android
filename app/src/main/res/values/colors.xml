@@ -4,5 +4,5 @@
     <color name="colorPrimary">#6BC28B</color>
     <color name="colorPrimaryDark">#49835e</color>
     <color name="colorAccent">#FCB215</color>
-
+    <color name="highlight">#a96bc28b</color>
 </resources>

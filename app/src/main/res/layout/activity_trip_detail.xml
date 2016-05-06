@@ -3,13 +3,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.travelmapi.app.travelmapi_app.TripDetailActivity">
+    <TextView
+        android:id="@+id/activity_trip_detail_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SHOW LOG"
+        style="@style/AppTheme.Title"/>
+    <include layout="@layout/button_bar"
+        android:id="@+id/activity_trip_detail_button_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"/>
+    <TextView
+        android:id="@+id/activity_trip_detail_textview_trip_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.Label"
+        android:layout_below="@id/activity_trip_detail_title"
+        tools:text="Sam's Trip"
+        />
+    <TextView
+        android:id="@+id/activity_trip_detail_textview_timestamp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/activity_trip_detail_textview_trip_name"
+        style="@style/AppTheme.TimeStamp"
+        tools:text="From 2016-03-08 15:31:18 To 2016-03-08 18:31:18 "/>
+    <LinearLayout
+        android:id="@+id/activity_trip_detail_linear_layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:layout_below="@id/activity_trip_detail_textview_timestamp"
+        >
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="No"
+            style="@style/AppTheme.Stamp.Header"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Date Time"
+            style="@style/AppTheme.Stamp.Header"/>
+        <TextView
+            android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Lat"
+            style="@style/AppTheme.Stamp.Header"/>
+        <TextView
+            android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Long"
+            style="@style/AppTheme.Stamp.Header"/>
+    </LinearLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/activity_trip_detail_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:layout_above="@id/activity_trip_detail_button_bar"
+        android:layout_below="@id/activity_trip_detail_linear_layout_header"/>
+
+    <include layout="@layout/button_bar"
+        android:id="@+id/activity_trip_detail_button_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"/>
 </RelativeLayout>

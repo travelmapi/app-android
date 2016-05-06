@@ -54,12 +54,11 @@ public class StartTravelActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_start_travel);
         ButterKnife.bind(this);
 
-
-//        if(Build.VERSION.SDK_INT >= 23) {
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSION_FINE_LOCATION);
-//        }
+        }
     }
 
     @Override
