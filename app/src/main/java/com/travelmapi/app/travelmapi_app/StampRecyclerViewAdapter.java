@@ -44,7 +44,7 @@ public class StampRecyclerViewAdapter extends RecyclerView.Adapter<StampRecycler
         NumberFormat format = new DecimalFormat("#00.0000");
         holder.lat.setText(format.format(stamp.getLat()));
         holder.lon.setText(format.format(stamp.getLon()));
-        holder.id.setText(stamp.getId());
+        holder.id.setText(String.valueOf(stamp.getId()));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (stamp.isSync()) {
                 holder.fullview.setBackground(holder.fullview.getContext().getDrawable(R.drawable.background_stamp_row_active));

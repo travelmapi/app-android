@@ -4,25 +4,28 @@
     android:layout_height="wrap_content">
 
 <Button
+    android:id="@+id/button_list_show_log"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
     style="@style/AppTheme.MenuButton"
     android:text="Show log"/>
 <Button
+    android:id="@+id/button_list_start_travel"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
     style="@style/AppTheme.MenuButton.Active"
     android:text="Start travel"/>
 <Button
-    android:id="@+id/activity_start_travel_button_list"
+    android:id="@+id/button_list_travel_list"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
     style="@style/AppTheme.MenuButton"
     android:text="Travels list"/>
 <Button
+    android:id="@+id/button_list_settings"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"

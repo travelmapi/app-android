@@ -5,8 +5,12 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.travelmapi.app.travelmapi_app.SettingsActivity;
 
 /**
  * Deals with restarting Stamp Alarm after a reboot
@@ -21,13 +25,17 @@ public class BootReceiver extends BroadcastReceiver {
 
             Intent alarmIntent = new Intent(context, AlarmReceiver.class);
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, alarmIntent, 0);
 
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            SharedPreferences pref = context.getSharedPreferences(SettingsActivity.PREFERENCES, Context.MODE_PRIVATE);
+            long interval = pref.getLong(SettingsActivity.ARG_INTERVAL, 15000);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                manager.setExact(AlarmManager.RTC_WAKEUP, interval, pendingIntent);
+            }else{
+//                manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+            }
 
-            int interval = 4000;
-
-            manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
             Log.d(TAG, "Alarm Set");
             Toast.makeText(context, "Alarm Set", Toast.LENGTH_SHORT).show();
         }

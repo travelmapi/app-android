@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.travelmapi.app.travelmapi_app.SettingsActivity">
+    <TextView
+        android:id="@+id/activity_setting_textview_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OPTIONS"
+        style="@style/AppTheme.Title"/>
+    <TextView
+        android:id="@+id/activity_setting_textview_user_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.Label"
+        android:layout_below="@id/activity_setting_textview_title"
+        android:text="User ID"/>
+    <EditText
+        android:id="@+id/activity_setting_edittext_user_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/activity_setting_textview_user_id"
+        style="@style/AppTheme.EditText"/>
+    <TextView
+        android:id="@+id/activity_setting_textview_device_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Device ID"
+        android:layout_below="@id/activity_setting_edittext_user_id"
+        style="@style/AppTheme.Label"/>
+    <EditText
+        android:id="@+id/activity_setting_edittext_device_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/activity_setting_textview_device_id"
+        style="@style/AppTheme.EditText"/>
+    <TextView
+        android:id="@+id/activity_setting_textview_tracking_speed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tracking Speed"
+        android:layout_below="@id/activity_setting_edittext_device_id"
+        style="@style/AppTheme.Label"/>
+    <Spinner
+        android:id="@+id/activity_setting_spinner_tracking_speed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/activity_setting_textview_tracking_speed"/>
+    <Button
+        android:id="@+id/activity_setting_button_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/activity_setting_spinner_tracking_speed"
+        style="@style/AppTheme.Button"
+        android:text="Save Settings"/>
+    <TextView
+        android:id="@+id/activity_setting_textview_sync"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Data Synchronization"
+        android:layout_below="@id/activity_setting_button_save"
+        style="@style/AppTheme.Label"/>
+    <TextView
+        android:id="@+id/activity_setting_textview_items_sync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="XXXX of YYYY log items are synchronized"
+        android:layout_below="@id/activity_setting_textview_sync"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:textSize="12sp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"/>
+    <Button
+        android:id="@+id/activity_setting_button_sync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/activity_setting_textview_items_sync"
+        android:layout_below="@id/activity_setting_textview_sync"
+        android:textSize="10sp"
+        android:background="@drawable/background_button_clear"
+        android:padding="10dp"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:text="Synchronize now"/>
+    <include layout="@layout/button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

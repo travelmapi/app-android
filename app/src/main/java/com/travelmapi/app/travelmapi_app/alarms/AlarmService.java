@@ -63,11 +63,13 @@ public class AlarmService extends Service implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
     Log.d(TAG, "LOCATION CHANGES");
+        Log.d(TAG, location.toString());
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Trip> trips = realm.where(Trip.class).findAll();
         for (int i = 0; i< trips.size(); i++) {
             Trip trip = trips.get(i);
             if (active(trip)) {
+                Log.d(TAG, trip.getName());
                 realm.beginTransaction();
                 TravelStamp stamp = new TravelStamp();
                 stamp.setLat(location.getLatitude());
@@ -75,6 +77,7 @@ public class AlarmService extends Service implements LocationListener {
                 stamp.setSync(false);
                 stamp.setTimestamp(new Date());
                 stamp.setSyncDate(null);
+                stamp.setId(trip.getStamps().size());
                 trip.getStamps().add(stamp);
                 realm.commitTransaction();
             }
@@ -83,7 +86,6 @@ public class AlarmService extends Service implements LocationListener {
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
         Log.d(TAG, "Status CHANGES");
     }
 

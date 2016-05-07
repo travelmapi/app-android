@@ -6,7 +6,9 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.audiofx.BassBoost;
 import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -58,6 +60,8 @@ public class StartTravelActivity extends AppCompatActivity  {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSION_FINE_LOCATION);
+        }else{
+            startAlarm();
         }
     }
 
@@ -66,14 +70,7 @@ public class StartTravelActivity extends AppCompatActivity  {
         switch(requestCode){
             case 0:
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Intent alarmIntent = new Intent(StartTravelActivity.this, AlarmReceiver.class);
-                    pendingIntent = PendingIntent.getBroadcast(StartTravelActivity.this, 0, alarmIntent, 0);
-
-                    AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    int interval = 8000;
-
-                    manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
-                    Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
+                    startAlarm();
                 }
                 break;
             default:
@@ -81,6 +78,29 @@ public class StartTravelActivity extends AppCompatActivity  {
                 break;
 
         }
+    }
+
+    private void startAlarm() {
+        Intent alarmIntent = new Intent(StartTravelActivity.this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(StartTravelActivity.this, 0, alarmIntent, 0);
+
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent updateServiceIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        PendingIntent pendingUpdateIntent = PendingIntent.getService(this, 0, updateServiceIntent, 0);
+        manager.cancel(pendingUpdateIntent);
+
+        SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
+
+        long interval = preferences.getLong(SettingsActivity.ARG_INTERVAL, 15000);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+interval, pendingIntent);
+        }else{
+
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        }
+        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.activity_start_travel_button_save)
@@ -114,11 +134,17 @@ public class StartTravelActivity extends AppCompatActivity  {
         realm.commitTransaction();
     }
 
-    @OnClick(R.id.activity_start_travel_button_list)
+    @OnClick(R.id.button_list_travel_list)
     void listClick(){
         Intent intent = new Intent(this, TripsViewActivity.class);
         startActivity(intent);
 
+    }
+
+    @OnClick(R.id.button_list_settings)
+    void settingsClick(){
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
 }
