@@ -1,9 +1,12 @@
 package com.travelmapi.app.travelmapi_app;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
@@ -32,6 +35,9 @@ public class TripDetailActivity extends AppCompatActivity {
     @BindView(R.id.activity_trip_detail_textview_timestamp)
     TextView mTimestamp;
 
+    @BindView(R.id.button_list_show_log)
+    Button mLog;
+
     StampRecyclerViewAdapter mAdapter;
 
     @Override
@@ -52,6 +58,11 @@ public class TripDetailActivity extends AppCompatActivity {
         String end = format.format(trip.getEnd());
         String timestamp = "From " + start +" to " + end;
         mTimestamp.setText(timestamp);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mLog.setBackground(getDrawable(R.drawable.bordered_background_active));
+            mLog.setTextColor(Color.WHITE);
+        }
 
     }
 }

@@ -5,11 +5,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -35,6 +37,10 @@ public class SettingsActivity extends AppCompatActivity {
     @BindView(R.id.activity_setting_spinner_tracking_speed)
     Spinner mTrackingSpeed;
 
+    @BindView(R.id.button_list_settings)
+    Button mSettings;
+
+
     private PendingIntent pendingIntent;
 
     @Override
@@ -48,6 +54,10 @@ public class SettingsActivity extends AppCompatActivity {
                 R.layout.support_simple_spinner_dropdown_item);
         mTrackingSpeed.setAdapter(spinnerAdapter);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mSettings.setBackground(getDrawable(R.drawable.bordered_background_active));
+            mSettings.setTextColor(Color.WHITE);
+        }
 
     }
 
@@ -113,5 +123,28 @@ public class SettingsActivity extends AppCompatActivity {
             manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
         }
         Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.button_list_travel_list)
+    void listClick(){
+        Intent intent = new Intent(this, TripsViewActivity.class);
+        startActivity(intent);
+        finish();
+
+    }
+
+    @OnClick(R.id.button_list_settings)
+    void settingsClick(){
+
+    }
+
+    @OnClick(R.id.button_list_start_travel)
+    void travelClick(){
+        finish();
+    }
+
+    @OnClick(R.id.button_list_show_log)
+    void logClick(){
+
     }
 }

@@ -1,11 +1,14 @@
 package com.travelmapi.app.travelmapi_app;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Button;
 
 import com.travelmapi.app.travelmapi_app.models.Trip;
 
@@ -25,6 +28,10 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
     @BindView(R.id.activity_trips_view_recycler_view)
     RecyclerView mRecycler;
 
+    @BindView(R.id.button_list_travel_list)
+    Button mTravel;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +41,12 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
         mRecycler.setAdapter(mAdapter);
         mRecycler.setItemAnimator(new DefaultItemAnimator());
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTravel.setBackground(getDrawable(R.drawable.bordered_background_active));
+            mTravel.setTextColor(Color.WHITE);
+        }
     }
 
     @OnClick(R.id.activity_trips_view_button_delete)
@@ -58,5 +71,25 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
         Intent intent = new Intent(this, TripDetailActivity.class);
         intent.putExtra(ARG_TRIP, trip.getId());
         startActivity(intent);
+    }
+    @OnClick(R.id.button_list_travel_list)
+    void listClick(){
+    }
+
+    @OnClick(R.id.button_list_settings)
+    void settingsClick(){
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @OnClick(R.id.button_list_start_travel)
+    void travelClick(){
+        finish();
+    }
+
+    @OnClick(R.id.button_list_show_log)
+    void logClick(){
+
     }
 }

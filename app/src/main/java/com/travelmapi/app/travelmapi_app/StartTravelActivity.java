@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.audiofx.BassBoost;
 import android.os.Build;
 import android.os.SystemClock;
@@ -16,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -48,6 +50,9 @@ public class StartTravelActivity extends AppCompatActivity  {
     @BindView(R.id.activity_start_travel_edittext_trip_name)
     public EditText mEditName;
 
+    @BindView(R.id.button_list_start_travel)
+    Button mTravel;
+
     private PendingIntent pendingIntent;
 
     @Override
@@ -55,6 +60,12 @@ public class StartTravelActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_travel);
         ButterKnife.bind(this);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTravel.setBackground(getDrawable(R.drawable.bordered_background_active));
+            mTravel.setTextColor(Color.WHITE);
+        }
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
             ActivityCompat.requestPermissions(this,
@@ -147,4 +158,13 @@ public class StartTravelActivity extends AppCompatActivity  {
         startActivity(intent);
     }
 
+    @OnClick(R.id.button_list_start_travel)
+    void travelClick(){
+
+    }
+
+    @OnClick(R.id.button_list_show_log)
+    void logClick(){
+
+    }
 }

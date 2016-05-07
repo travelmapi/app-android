@@ -66,9 +66,5 @@
         android:layout_above="@id/activity_trip_detail_button_bar"
         android:layout_below="@id/activity_trip_detail_linear_layout_header"/>
 
-    <include layout="@layout/button_bar"
-        android:id="@+id/activity_trip_detail_button_bar"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"/>
+
 </RelativeLayout>

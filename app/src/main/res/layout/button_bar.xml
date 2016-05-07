@@ -15,7 +15,7 @@
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
-    style="@style/AppTheme.MenuButton.Active"
+    style="@style/AppTheme.MenuButton"
     android:text="Start travel"/>
 <Button
     android:id="@+id/button_list_travel_list"
