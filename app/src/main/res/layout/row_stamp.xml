@@ -12,6 +12,7 @@
     android:id="@+id/row_stamp_textview_id"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
+    android:layout_marginStart="4dp"
     tools:text="102"
     style="@style/AppTheme.Stamp"/>
     <TextView
@@ -34,4 +35,8 @@
         android:layout_width="0dp"
         style="@style/AppTheme.Stamp"
         tools:text="-22.9643"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_keyboard_arrow_right_black_24dp"/>
 </LinearLayout>

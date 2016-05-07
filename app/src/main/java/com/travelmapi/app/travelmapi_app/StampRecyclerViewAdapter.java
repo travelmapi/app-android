@@ -20,11 +20,17 @@ import io.realm.RealmList;
 /**
  * Created by sam on 5/5/16.
  */
-public class StampRecyclerViewAdapter extends RecyclerView.Adapter<StampRecyclerViewAdapter.StampViewHolder> {
+public class StampRecyclerViewAdapter extends RecyclerView.Adapter<StampRecyclerViewAdapter.StampViewHolder>{
 
     private RealmList<TravelStamp> mStamps;
-    public StampRecyclerViewAdapter(RealmList<TravelStamp> stamps){
+    private StampRowClickListener mListener;
+    public StampRecyclerViewAdapter(RealmList<TravelStamp> stamps, StampRowClickListener listener){
       mStamps = stamps;
+        mListener = listener;
+    }
+
+    public interface StampRowClickListener{
+        void onStampRowClick(TravelStamp stamp);
     }
 
 
@@ -36,7 +42,7 @@ public class StampRecyclerViewAdapter extends RecyclerView.Adapter<StampRecycler
     }
 
     @Override
-    public void onBindViewHolder(StampViewHolder holder, int position) {
+    public void onBindViewHolder(final StampViewHolder holder, int position) {
         TravelStamp stamp = mStamps.get(position);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd kk:mm:ss");
         String tStamp = dateFormat.format(stamp.getTimestamp());
@@ -53,6 +59,14 @@ public class StampRecyclerViewAdapter extends RecyclerView.Adapter<StampRecycler
                 holder.fullview.setBackground(holder.fullview.getContext().getDrawable(R.drawable.background_stamp_row));
             }
         }
+        holder.fullview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mListener != null){
+                    mListener.onStampRowClick(mStamps.get(holder.getAdapterPosition()));
+                }
+            }
+        });
     }
 
     @Override

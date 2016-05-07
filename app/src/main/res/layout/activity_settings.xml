@@ -8,6 +8,7 @@
         android:id="@+id/activity_setting_textview_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/activity_setting_logo"
         android:text="OPTIONS"
         style="@style/AppTheme.Title"/>
     <TextView

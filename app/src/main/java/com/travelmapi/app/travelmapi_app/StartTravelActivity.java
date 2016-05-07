@@ -111,7 +111,6 @@ public class StartTravelActivity extends AppCompatActivity  {
 
             manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
         }
-        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.activity_start_travel_button_save)
@@ -121,7 +120,7 @@ public class StartTravelActivity extends AppCompatActivity  {
             return;
         }
 
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy.kk.mm.ss", Locale.US);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd.kk.mm.ss", Locale.US);
 
         Date sDate;
         Date eDate;

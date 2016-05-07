@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 
+import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class TripsViewActivity extends AppCompatActivity implements TripRecyclerViewAdapter.OnTripRowClickListener{
@@ -58,7 +60,12 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
             RealmResults<Trip> results = realm.where(Trip.class).equalTo("id", id).findAll();
             realm.beginTransaction();
             if(results.size() > 0) {
-                results.remove(0);
+                RealmList<TravelStamp> stamps = results.get(0).getStamps();
+                stamps.clear();
+                for(TravelStamp stamp:stamps){
+                    stamp.removeFromRealm();
+                }
+                results.removeLast();
             }
             realm.commitTransaction();
             mAdapter.notifyDataSetChanged();

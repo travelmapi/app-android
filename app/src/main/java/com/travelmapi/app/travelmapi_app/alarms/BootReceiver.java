@@ -23,7 +23,7 @@ public class BootReceiver extends BroadcastReceiver {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             /* Setting the alarm here */
 
-            Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+            Intent alarmIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, alarmIntent, 0);
 
@@ -31,13 +31,12 @@ public class BootReceiver extends BroadcastReceiver {
             SharedPreferences pref = context.getSharedPreferences(SettingsActivity.PREFERENCES, Context.MODE_PRIVATE);
             long interval = pref.getLong(SettingsActivity.ARG_INTERVAL, 15000);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//                manager.setExact(AlarmManager.RTC_WAKEUP, interval, pendingIntent);
+                manager.setExact(AlarmManager.RTC_WAKEUP, interval, pendingIntent);
             }else{
-//                manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+                manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
             }
 
             Log.d(TAG, "Alarm Set");
-            Toast.makeText(context, "Alarm Set", Toast.LENGTH_SHORT).show();
         }
     }
 }

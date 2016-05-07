@@ -122,7 +122,6 @@ public class SettingsActivity extends AppCompatActivity {
 
             manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
         }
-        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.button_list_travel_list)

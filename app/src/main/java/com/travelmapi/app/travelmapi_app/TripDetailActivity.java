@@ -1,6 +1,8 @@
 package com.travelmapi.app.travelmapi_app;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
@@ -17,14 +20,16 @@ import org.w3c.dom.Text;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
-public class TripDetailActivity extends AppCompatActivity {
+public class TripDetailActivity extends AppCompatActivity implements StampRecyclerViewAdapter.StampRowClickListener {
 
     @BindView(R.id.activity_trip_detail_recycler_view)
     RecyclerView mRecyclerView;
@@ -49,7 +54,7 @@ public class TripDetailActivity extends AppCompatActivity {
         Realm realm = Realm.getDefaultInstance();
         Trip trip = realm.where(Trip.class).equalTo("id", tripId).findFirst();
         RealmList<TravelStamp> stamps = trip.getStamps();
-        mAdapter = new StampRecyclerViewAdapter(stamps);
+        mAdapter = new StampRecyclerViewAdapter(stamps, this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mName.setText(trip.getName());
@@ -65,4 +70,31 @@ public class TripDetailActivity extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    public void onStampRowClick(TravelStamp stamp) {
+        String uri = String.format(Locale.ENGLISH, "geo:%f,%f", stamp.getLat(), stamp.getLon());
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.button_list_travel_list)
+    void listClick(){
+        finish();
+
+    }
+
+    @OnClick(R.id.button_list_settings)
+    void settingsClick(){
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @OnClick(R.id.button_list_start_travel)
+    void travelClick(){
+        finish();
+    }
+
+
 }
