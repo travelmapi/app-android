@@ -15,4 +15,12 @@
     <string name="enter_all_fields">Please enter all fields</string>
     <string name="start_date_before_end">End date must be after start date</string>
     <string name="trip_created">Trip Created</string>
+    <string name="trip_exists">Trip Already Exists</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="show_log">SHOW LOG</string>
+    <string name="date_time">Date Time</string>
+    <string name="lat">Lat</string>
+    <string name="longitude_short">Long</string>
+    <string name="edit_trip_name">Edit Trip Name</string>
 </resources>

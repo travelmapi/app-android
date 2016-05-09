@@ -4,6 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.travelmapi.app.travelmapi_app.SettingsActivity">
+    <ImageView
+        android:id="@+id/activity_setting_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo"/>
     <TextView
         android:id="@+id/activity_setting_textview_title"
         android:layout_width="match_parent"

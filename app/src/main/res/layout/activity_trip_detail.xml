@@ -4,30 +4,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.travelmapi.app.travelmapi_app.TripDetailActivity">
+    <ImageView
+        android:id="@+id/activity_trip_detail_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo"/>
     <TextView
         android:id="@+id/activity_trip_detail_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SHOW LOG"
+        android:layout_below="@id/activity_trip_detail_logo"
+        android:text="@string/show_log"
         style="@style/AppTheme.Title"/>
     <include layout="@layout/button_bar"
         android:id="@+id/activity_trip_detail_button_bar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"/>
-    <TextView
-        android:id="@+id/activity_trip_detail_textview_trip_name"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/activity_trip_detail_button_trip_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.Label"
         android:layout_below="@id/activity_trip_detail_title"
         tools:text="Sam's Trip"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:textAlignment="textStart"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:textColor="@color/colorPrimary"
+
         />
     <TextView
         android:id="@+id/activity_trip_detail_textview_timestamp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/activity_trip_detail_textview_trip_name"
+        android:layout_below="@id/activity_trip_detail_button_trip_name"
         style="@style/AppTheme.TimeStamp"
         tools:text="From 2016-03-08 15:31:18 To 2016-03-08 18:31:18 "/>
     <LinearLayout
@@ -46,17 +57,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="Date Time"
+            android:text="@string/date_time"
             style="@style/AppTheme.Stamp.Header"/>
         <TextView
             android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Lat"
+        android:text="@string/lat"
             style="@style/AppTheme.Stamp.Header"/>
         <TextView
             android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Long"
+        android:text="@string/longitude_short"
             style="@style/AppTheme.Stamp.Header"/>
     </LinearLayout>
     <android.support.v7.widget.RecyclerView

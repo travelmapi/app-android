@@ -1,0 +1,40 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.travelmapi.app.travelmapi_app.EditNameFragment">
+
+    <TextView
+        android:id="@+id/fragment_edit_name_textview_edit_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_trip_name"
+        style="@style/AppTheme.Label"/>
+<EditText
+    android:id="@+id/fragment_edit_name_edit_text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:inputType="textCapWords"
+    android:layout_below="@id/fragment_edit_name_textview_edit_name"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_edit_name_edit_text"
+        android:layout_marginBottom="@dimen/activity_vertical_margin">
+        <Button
+            android:id="@+id/fragment_edit_name_button_cancel"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            style="@style/AppTheme.Button"/>
+        <Button
+            android:id="@+id/fragment_edit_name_button_save"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/save"
+            style="@style/AppTheme.Button"/>
+    </LinearLayout>
+
+</RelativeLayout>

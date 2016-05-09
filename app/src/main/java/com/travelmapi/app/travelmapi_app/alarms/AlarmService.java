@@ -69,6 +69,9 @@ public class AlarmService extends Service implements LocationListener {
         for (int i = 0; i< trips.size(); i++) {
             Trip trip = trips.get(i);
             if (active(trip)) {
+                /**
+                 * TODO: Do not add stamp if most recent stamp has same coordinates.
+                 */
                 Log.d(TAG, trip.getName());
                 realm.beginTransaction();
                 TravelStamp stamp = new TravelStamp();

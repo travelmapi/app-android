@@ -32,6 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class StartTravelActivity extends AppCompatActivity implements DateTimeDialogFragment.OnDialogCompleteListener {
 
@@ -131,13 +132,17 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
         }
 
         Realm realm = Realm.getDefaultInstance();
+        RealmResults<Trip> results = realm.where(Trip.class).equalTo("start", mStartDate).equalTo("end", mEndDate).findAll();
+        if(results.size() > 0){
+          Toast.makeText(this, R.string.trip_exists, Toast.LENGTH_SHORT).show();
+            return;
+        }
         realm.beginTransaction();
         Trip trip = realm.createObject(Trip.class);
         trip.setName(mEditName.getText().toString());
         trip.setStart(mStartDate);
         trip.setEnd(mEndDate);
 
-        realm.where(Trip.class).equals(trip);
 
         trip.setId(UUID.randomUUID().toString());
         realm.commitTransaction();

@@ -73,6 +73,14 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
         }
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapter.notifyDataSetChanged();
+    }
+
+
     @Override
     public void onTripRowClicked(Trip trip) {
         Intent intent = new Intent(this, TripDetailActivity.class);
