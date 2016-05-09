@@ -32,13 +32,14 @@
         android:layout_below="@id/activity_start_travel_edittext_trip_name"
         android:text="Start date and time"
         style="@style/AppTheme.Label"/>
-    <EditText
+
+    <Button
         android:id="@+id/activity_start_travel_edittext_trip_start"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="34dp"
         android:layout_below="@id/activity_start_travel_textview_trip_start"
-        style="@style/AppTheme.EditText"
-        android:inputType="date"/>
+        style="@style/AppTheme.EditText.Button"
+        />
     <TextView
         android:id="@+id/activity_start_travel_textview_trip_end"
         android:layout_width="wrap_content"
@@ -47,12 +48,12 @@
         android:text="End date and time"
         style="@style/AppTheme.Label"
         />
-    <EditText
+    <Button
         android:id="@+id/activity_start_travel_edittext_trip_end"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="34dp"
         android:layout_below="@id/activity_start_travel_textview_trip_end"
-        style="@style/AppTheme.EditText"
+        style="@style/AppTheme.EditText.Button"
         android:inputType="date"/>
     <Button
         android:id="@+id/activity_start_travel_button_save"

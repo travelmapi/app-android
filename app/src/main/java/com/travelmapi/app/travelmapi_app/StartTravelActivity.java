@@ -2,16 +2,13 @@ package com.travelmapi.app.travelmapi_app;
 
 import android.Manifest;
 import android.app.AlarmManager;
-import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.media.audiofx.BassBoost;
 import android.os.Build;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +21,7 @@ import android.widget.Toast;
 import com.travelmapi.app.travelmapi_app.alarms.AlarmReceiver;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,17 +33,20 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 
-public class StartTravelActivity extends AppCompatActivity  {
+public class StartTravelActivity extends AppCompatActivity implements DateTimeDialogFragment.OnDialogCompleteListener {
 
 
     private static final String TAG = StartTravelActivity.class.getSimpleName();
     private static final int PERMISSION_FINE_LOCATION = 0;
+    public static final int FLAG_START = 0;
+    public static final int FLAG_END = 1;
+    public static final String DATE_FORMAT = "yyyy/MM/dd kk:mm:ss";
 
     @BindView(R.id.activity_start_travel_edittext_trip_end)
-    public EditText mEditEnd;
+    public Button mEditEnd;
 
     @BindView(R.id.activity_start_travel_edittext_trip_start)
-    public EditText mEditStart;
+    public Button mEditStart;
 
     @BindView(R.id.activity_start_travel_edittext_trip_name)
     public EditText mEditName;
@@ -54,6 +55,7 @@ public class StartTravelActivity extends AppCompatActivity  {
     Button mTravel;
 
     private PendingIntent pendingIntent;
+    private Date mStartDate, mEndDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,35 +115,40 @@ public class StartTravelActivity extends AppCompatActivity  {
         }
     }
 
+    /**
+     *
+     * TODO Make sure there are no duplicate trips
+     */
     @OnClick(R.id.activity_start_travel_button_save)
     void saveClick(){
-        if(mEditEnd.getText().toString().equals("") || mEditStart.getText().toString().equals("") || mEditName.getText().toString().equals("")){
-            Toast.makeText(this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+        if(mEndDate == null || mStartDate == null || mEditName.getText().toString().equals("")){
+            Toast.makeText(this, R.string.enter_all_fields, Toast.LENGTH_SHORT).show();
             return;
         }
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd.kk.mm.ss", Locale.US);
-
-        Date sDate;
-        Date eDate;
-        try {
-            sDate = format.parse(mEditStart.getText().toString());
-            eDate = format.parse(mEditEnd.getText().toString());
-        } catch (ParseException e) {
-            Toast.makeText(this, "Invalid Date Format", Toast.LENGTH_SHORT).show();
+        if(mEndDate.compareTo(mStartDate) < 0){
+            Toast.makeText(this, R.string.start_date_before_end, Toast.LENGTH_SHORT).show();
             return;
         }
-        Log.d(TAG, sDate.toString());
-        Log.d(TAG, eDate.toString());
 
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         Trip trip = realm.createObject(Trip.class);
         trip.setName(mEditName.getText().toString());
-        trip.setStart(sDate);
-        trip.setEnd(eDate);
+        trip.setStart(mStartDate);
+        trip.setEnd(mEndDate);
+
+        realm.where(Trip.class).equals(trip);
+
         trip.setId(UUID.randomUUID().toString());
         realm.commitTransaction();
+
+        mEditEnd.setText("");
+        mEditName.setText("");
+        mEditStart.setText("");
+        mStartDate = null;
+        mEndDate = null;
+        Toast.makeText(this, R.string.trip_created, Toast.LENGTH_SHORT).show();
+
     }
 
     @OnClick(R.id.button_list_travel_list)
@@ -165,5 +172,36 @@ public class StartTravelActivity extends AppCompatActivity  {
     @OnClick(R.id.button_list_show_log)
     void logClick(){
 
+    }
+
+    @OnClick(R.id.activity_start_travel_edittext_trip_start)
+    void startClick(){
+        android.app.FragmentManager manager = getFragmentManager();
+        DateTimeDialogFragment dialog = new DateTimeDialogFragment();
+        dialog.setOnDateTimeSetListener(this);
+        dialog.setFlag(FLAG_START);
+        dialog.show(manager, "date_time_dialog_fragment");
+    }
+    @OnClick(R.id.activity_start_travel_edittext_trip_end)
+    void endClick(){
+        android.app.FragmentManager manager = getFragmentManager();
+        DateTimeDialogFragment dialog = new DateTimeDialogFragment();
+        dialog.setOnDateTimeSetListener(this);
+        dialog.setFlag(FLAG_END);
+        dialog.show(manager, "date_time_dialog_fragment");
+    }
+    @Override
+    public void dialogComplete(Date date, int flag) {
+        DateFormat format = new SimpleDateFormat(DATE_FORMAT);
+        switch (flag){
+            case FLAG_START :
+                mEditStart.setText(format.format(date));
+                mStartDate = date;
+                break;
+            case FLAG_END :
+                mEditEnd.setText(format.format(date));
+                mEndDate = date;
+                break;
+        }
     }
 }
