@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 
+import org.w3c.dom.Text;
+
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -43,10 +45,13 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
     Button mName;
 
     @BindView(R.id.activity_trip_detail_textview_timestamp)
-    TextView mTimestamp;
+    Button mTimestamp;
 
     @BindView(R.id.button_list_show_log)
     Button mLog;
+
+    @BindView(R.id.activity_trip_detail_textview_logs)
+    TextView mNumLogs;
 
     StampRecyclerViewAdapter mAdapter;
     Trip mTrip;
@@ -64,7 +69,7 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mName.setText(mTrip.getName());
-
+        mNumLogs.setText(String.format(getString(R.string.num_logs), mTrip.getStamps().size()));
         String start = new DateHandler(mTrip.getStart()).toString();
         String end = new DateHandler(mTrip.getEnd()).toString();
         String timestamp = "From: " + start +"\nTo: " + end;

@@ -66,7 +66,7 @@ public class AlarmService extends Service implements LocationListener {
         for (int i = 0; i< trips.size(); i++) {
             Trip trip = trips.get(i);
             if (active(trip)) {
-                if(trip.getStamps().last().getLat() == location.getLatitude() && trip.getStamps().last().getLon() == location.getLongitude()){
+                if(trip.getStamps().size() > 0 && trip.getStamps().last().getLat() == location.getLatitude() && trip.getStamps().last().getLon() == location.getLongitude()){
                     realm.beginTransaction();
                     trip.getStamps().last().setTimestamp(new Date());
                     realm.commitTransaction();

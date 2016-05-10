@@ -35,7 +35,6 @@ public class BootReceiver extends BroadcastReceiver {
             }else{
                 manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
             }
-
             Log.d(TAG, "Alarm Set");
         }
     }
