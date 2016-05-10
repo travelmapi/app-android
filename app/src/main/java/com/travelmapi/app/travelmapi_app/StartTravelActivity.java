@@ -41,7 +41,6 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
     private static final int PERMISSION_FINE_LOCATION = 0;
     public static final int FLAG_START = 0;
     public static final int FLAG_END = 1;
-    public static final String DATE_FORMAT = "yyyy/MM/dd kk:mm:ss";
 
     @BindView(R.id.activity_start_travel_edittext_trip_end)
     public Button mEditEnd;
@@ -185,6 +184,7 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
         DateTimeDialogFragment dialog = new DateTimeDialogFragment();
         dialog.setOnDateTimeSetListener(this);
         dialog.setFlag(FLAG_START);
+        dialog.setDate(mStartDate);
         dialog.show(manager, "date_time_dialog_fragment");
     }
     @OnClick(R.id.activity_start_travel_edittext_trip_end)
@@ -193,18 +193,18 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
         DateTimeDialogFragment dialog = new DateTimeDialogFragment();
         dialog.setOnDateTimeSetListener(this);
         dialog.setFlag(FLAG_END);
+        dialog.setDate(mEndDate);
         dialog.show(manager, "date_time_dialog_fragment");
     }
     @Override
     public void dialogComplete(Date date, int flag) {
-        DateFormat format = new SimpleDateFormat(DATE_FORMAT);
         switch (flag){
             case FLAG_START :
-                mEditStart.setText(format.format(date));
+                mEditStart.setText(new DateHandler(date).toString());
                 mStartDate = date;
                 break;
             case FLAG_END :
-                mEditEnd.setText(format.format(date));
+                mEditEnd.setText(new DateHandler(date).toString());
                 mEndDate = date;
                 break;
         }

@@ -52,7 +52,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
     public void onBindViewHolder(final TripViewHolder holder, int position) {
         Trip trip = mTrips.get(position);
         holder.title.setText(trip.getName());
-        String dates = String.format("from %s to %s",trip.getStart().toString(), trip.getEnd().toString());
+        String dates = String.format("From: %s\nTo: %s",new DateHandler(trip.getStart()).toString(), new DateHandler(trip.getEnd()).toString());
         holder.dates.setText(dates);
         holder.check.setChecked(selected.contains(position));
         holder.check.setOnClickListener(this);

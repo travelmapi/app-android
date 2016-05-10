@@ -35,6 +35,8 @@
         <item name="android:textSize">16sp</item>
     </style>
     <style name="AppTheme.EditText.Button">
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:paddingStart">@dimen/activity_horizontal_margin</item>
     </style>
     <style name="AppTheme.Button">
         <item name="android:layout_marginStart">@dimen/activity_horizontal_margin</item>

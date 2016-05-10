@@ -15,9 +15,13 @@ import android.widget.Toast;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,10 +60,10 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mName.setText(mTrip.getName());
-        DateFormat format = new SimpleDateFormat("yyyy-mm-dd kk:mm:ss");
-        String start = format.format(mTrip.getStart());
-        String end = format.format(mTrip.getEnd());
-        String timestamp = "From " + start +" to " + end;
+
+        String start = new DateHandler(mTrip.getStart()).toString();
+        String end = new DateHandler(mTrip.getEnd()).toString();
+        String timestamp = "From: " + start +"\nTo: " + end;
         mTimestamp.setText(timestamp);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -71,7 +75,7 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
 
     @Override
     public void onStampRowClick(TravelStamp stamp) {
-        String uri = String.format(Locale.ENGLISH, "geo:%f,%f", stamp.getLat(), stamp.getLon());
+        String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f", stamp.getLat(), stamp.getLon(), stamp.getLat(), stamp.getLon());
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         startActivity(intent);
     }

@@ -44,7 +44,7 @@ public class StampRecyclerViewAdapter extends RecyclerView.Adapter<StampRecycler
     @Override
     public void onBindViewHolder(final StampViewHolder holder, int position) {
         TravelStamp stamp = mStamps.get(position);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd kk:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
         String tStamp = dateFormat.format(stamp.getTimestamp());
         holder.timeStamp.setText(tStamp);
         NumberFormat format = new DecimalFormat("#00.0000");

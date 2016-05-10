@@ -47,9 +47,6 @@ public class AlarmService extends Service implements LocationListener {
         return START_STICKY;
     }
 
-    public void getStamp(Trip trip) {
-        Log.d(TAG, "Getting Stamp");
-    }
 
 
     public boolean active(Trip trip){
@@ -69,20 +66,23 @@ public class AlarmService extends Service implements LocationListener {
         for (int i = 0; i< trips.size(); i++) {
             Trip trip = trips.get(i);
             if (active(trip)) {
-                /**
-                 * TODO: Do not add stamp if most recent stamp has same coordinates.
-                 */
-                Log.d(TAG, trip.getName());
-                realm.beginTransaction();
-                TravelStamp stamp = new TravelStamp();
-                stamp.setLat(location.getLatitude());
-                stamp.setLon(location.getLongitude());
-                stamp.setSync(false);
-                stamp.setTimestamp(new Date());
-                stamp.setSyncDate(null);
-                stamp.setId(trip.getStamps().size());
-                trip.getStamps().add(stamp);
-                realm.commitTransaction();
+                if(trip.getStamps().last().getLat() == location.getLatitude() && trip.getStamps().last().getLon() == location.getLongitude()){
+                    realm.beginTransaction();
+                    trip.getStamps().last().setTimestamp(new Date());
+                    realm.commitTransaction();
+                }else {
+                    Log.d(TAG, trip.getName());
+                    realm.beginTransaction();
+                    TravelStamp stamp = new TravelStamp();
+                    stamp.setLat(location.getLatitude());
+                    stamp.setLon(location.getLongitude());
+                    stamp.setSync(false);
+                    stamp.setTimestamp(new Date());
+                    stamp.setSyncDate(null);
+                    stamp.setId(trip.getStamps().size());
+                    trip.getStamps().add(stamp);
+                    realm.commitTransaction();
+                }
             }
         }
     }
