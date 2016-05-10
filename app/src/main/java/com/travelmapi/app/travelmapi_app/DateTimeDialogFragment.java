@@ -54,7 +54,7 @@ public class DateTimeDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_date_time_dialog, container, false);
-//        getDialog().setCanceledOnTouchOutside(true);
+        getDialog().setCanceledOnTouchOutside(true);
         ButterKnife.bind(this, view);
         mHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         mMinute = Calendar.getInstance().get(Calendar.MINUTE);

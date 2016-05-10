@@ -23,4 +23,6 @@
     <string name="lat">Lat</string>
     <string name="longitude_short">Long</string>
     <string name="edit_trip_name">Edit Trip Name</string>
+    <string name="edit_start">Edit Start</string>
+    <string name="edit_end">Edit End</string>
 </resources>

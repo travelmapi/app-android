@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
@@ -30,8 +32,10 @@ import butterknife.OnLongClick;
 import io.realm.Realm;
 import io.realm.RealmList;
 
-public class TripDetailActivity extends AppCompatActivity implements StampRecyclerViewAdapter.StampRowClickListener, EditNameFragment.OnFragmentCompleteListener{
+public class TripDetailActivity extends AppCompatActivity implements StampRecyclerViewAdapter.StampRowClickListener, EditNameFragment.OnFragmentCompleteListener, EditDateDialogFragment.DialogCompleteListener, DateTimeDialogFragment.OnDialogCompleteListener {
 
+    private static final int FLAG_START = 0;
+    private static final int FLAG_END = 1;
     @BindView(R.id.activity_trip_detail_recycler_view)
     RecyclerView mRecyclerView;
 
@@ -98,6 +102,7 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
         android.app.FragmentManager manager = getFragmentManager();
         EditNameFragment edit = new EditNameFragment();
         edit.setOnFragmentCompleteListener(this);
+        edit.setName(mTrip.getName());
         edit.show(manager, "edit_name_dialog");
     }
 
@@ -115,5 +120,61 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
         trip.setName(name);
         realm.commitTransaction();
         mName.setText(name);
+    }
+
+    @OnClick(R.id.activity_trip_detail_textview_timestamp)
+    void timestampClick(){
+        android.app.FragmentManager manager = getFragmentManager();
+        EditDateDialogFragment fragment = new EditDateDialogFragment();
+        fragment.setOnDialogCompleteListener(this);
+        fragment.show(manager, "edit_date_fragment");
+    }
+
+    @Override
+    public void onDialogComplete(int flag) {
+        if(flag == EditDateDialogFragment.FLAG_START){
+            android.app.FragmentManager manager = getFragmentManager();
+            DateTimeDialogFragment dialog = new DateTimeDialogFragment();
+            dialog.setOnDateTimeSetListener(this);
+            dialog.setFlag(FLAG_START);
+            dialog.setDate(mTrip.getStart());
+            dialog.show(manager, "date_time_dialog_fragment");    
+        }else{
+
+            android.app.FragmentManager manager = getFragmentManager();
+            DateTimeDialogFragment dialog = new DateTimeDialogFragment();
+            dialog.setOnDateTimeSetListener(this);
+            dialog.setFlag(FLAG_END);
+            dialog.setDate(mTrip.getEnd());
+            dialog.show(manager, "date_time_dialog_fragment");
+        }
+    }
+
+    @Override
+    public void dialogComplete(Date date, int flag) {
+        if(date == null){return;}
+        if(flag == FLAG_START){
+            Realm realm = Realm.getDefaultInstance();
+            Trip trip = realm.where(Trip.class).equalTo("id", mTrip.getId()).findFirst();
+            realm.beginTransaction();
+            trip.setStart(date);
+            realm.commitTransaction();
+
+            String start = new DateHandler(date).toString();
+            String end = new DateHandler(mTrip.getEnd()).toString();
+            String timestamp = "From: " + start +"\nTo: " + end;
+            mTimestamp.setText(timestamp);
+
+        }else {
+            Realm realm = Realm.getDefaultInstance();
+            Trip trip = realm.where(Trip.class).equalTo("id", mTrip.getId()).findFirst();
+            realm.beginTransaction();
+            trip.setEnd(date);
+            realm.commitTransaction();
+            String start = new DateHandler(mTrip.getStart()).toString();
+            String end = new DateHandler(date).toString();
+            String timestamp = "From: " + start +"\nTo: " + end;
+            mTimestamp.setText(timestamp);
+        }
     }
 }
