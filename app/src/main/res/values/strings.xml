@@ -44,4 +44,7 @@
     <string name="data_synchronization">Data Synchronization</string>
     <string name="synchronize_now">Synchronize now</string>
     <string name="update_speed">Update Speed</string>
+    <string name="settings_saved">Settings Saved</string>
+    <string name="inactive">Inactive</string>
+    <string name="active">Active</string>
 </resources>

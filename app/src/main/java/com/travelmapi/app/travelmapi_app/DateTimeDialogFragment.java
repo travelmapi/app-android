@@ -59,6 +59,9 @@ public class DateTimeDialogFragment extends DialogFragment {
         mHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         mMinute = Calendar.getInstance().get(Calendar.MINUTE);
 
+        //temporary fix to AM/PM problem
+        //TODO: Find workaround to AM/PM bug
+        mTime.setIs24HourView(true);
 
         mTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override

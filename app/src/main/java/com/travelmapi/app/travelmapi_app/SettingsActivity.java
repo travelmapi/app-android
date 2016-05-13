@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.travelmapi.app.travelmapi_app.alarms.AlarmReceiver;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
@@ -71,6 +72,12 @@ public class SettingsActivity extends AppCompatActivity {
                 R.array.update_intervals,
                 R.layout.support_simple_spinner_dropdown_item);
         mUpdateSpeed.setAdapter(updateAdapter);
+
+        //show user ID in edit text
+        SharedPreferences preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        String userId = preferences.getString(ARG_USER_ID, "");
+        mUserId.setText(userId);
+
         Realm realm = Realm.getDefaultInstance();
         RealmResults<TravelStamp> stamps = realm.where(TravelStamp.class).findAll();
         int count = 0;
@@ -105,6 +112,7 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putLong(ARG_UPDATE_INTERVAL, trackerIntervalMapper(mUpdateSpeed.getSelectedItem().toString()));
         editor.apply();
         startAlarm();
+        Toast.makeText(this, R.string.settings_saved, Toast.LENGTH_SHORT).show();
     }
 
     /**

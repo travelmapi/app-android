@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
+import com.travelmapi.app.travelmapi_app.models.TripHelper;
 
 import org.w3c.dom.Text;
 
@@ -55,6 +56,9 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
     @BindView(R.id.activity_trip_detail_textview_logs)
     TextView mNumLogs;
 
+    @BindView(R.id.activity_trip_detail_textview_active)
+    TextView mActive;
+
     StampRecyclerViewAdapter mAdapter;
     Trip mTrip;
 
@@ -70,10 +74,16 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
         mTrip = realm.where(Trip.class).equalTo("id", tripId).findFirst();
         RealmList<TravelStamp> stamps = mTrip.getStamps();
         RealmList<TravelStamp> tStamps = new RealmList<>();
+        //reverse order of stamps
         for(int i = stamps.size() -1; i >= 0; i--){
             tStamps.add(stamps.get(i));
         }
 
+        if(TripHelper.active(mTrip)){
+            mActive.setText(R.string.active);
+        }else{
+            mActive.setText(R.string.inactive);
+        }
 
         mAdapter = new StampRecyclerViewAdapter(tStamps, this);
         mRecyclerView.setAdapter(mAdapter);

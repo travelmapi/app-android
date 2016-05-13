@@ -10,9 +10,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.travelmapi.app.travelmapi_app.models.Trip;
+import com.travelmapi.app.travelmapi_app.models.TripHelper;
 
 import java.security.cert.TrustAnchor;
 import java.util.ArrayList;
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -57,6 +59,13 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
         holder.check.setChecked(selected.contains(position));
         holder.check.setOnClickListener(this);
         holder.check.setTag(trip);
+        if(TripHelper.active(trip)){
+            holder.active.setText(R.string.active);
+        }else{
+            holder.active.setText(R.string.inactive);
+        }
+        String logs = String.format("%d Logs",trip.getStamps().size());
+        holder.logs.setText(logs);
         holder.fullView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,7 +94,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
     }
 
     static class TripViewHolder extends RecyclerView.ViewHolder {
-        TextView title, dates;
+        TextView title, dates, active, logs;
         CheckBox check;
         View fullView;
         public TripViewHolder(View itemView) {
@@ -93,6 +102,8 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
             title = (TextView) itemView.findViewById(R.id.row_trip_textview_title);
             dates = (TextView) itemView.findViewById(R.id.row_trip_textview_dates);
             check = (CheckBox) itemView.findViewById(R.id.row_trip_checkbox_delete);
+            active = (TextView) itemView.findViewById(R.id.row_trip_textview_active);
+            logs = (TextView) itemView.findViewById(R.id.row_trip_textview_logs);
             fullView = itemView;
         }
     }

@@ -17,6 +17,7 @@ import android.util.Log;
 
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
+import com.travelmapi.app.travelmapi_app.models.TripHelper;
 
 import java.util.Date;
 
@@ -48,16 +49,6 @@ public class AlarmService extends Service implements LocationListener {
         return START_STICKY;
     }
 
-
-
-    public boolean active(Trip trip){
-        Date now = new Date();
-        if(now.compareTo(trip.getStart()) > 0 && now.compareTo(trip.getEnd()) < 0){
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public void onLocationChanged(Location location) {
     Log.d(TAG, "LOCATION CHANGES");
@@ -66,7 +57,7 @@ public class AlarmService extends Service implements LocationListener {
         RealmResults<Trip> trips = realm.where(Trip.class).findAll();
         for (int i = 0; i< trips.size(); i++) {
             Trip trip = trips.get(i);
-            if (active(trip)) {
+            if (TripHelper.active(trip)) {
                 RealmList<TravelStamp> stamps = trip.getStamps();
 
                 //check and see if the last two logged locations are considered the same location
