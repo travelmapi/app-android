@@ -46,7 +46,7 @@ public class StampRecyclerViewAdapter extends RecyclerView.Adapter<StampRecycler
         TravelStamp stamp = mStamps.get(position);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
         String tStamp = dateFormat.format(stamp.getTimestamp());
-        holder.timeStamp.setText(tStamp);
+        holder.timeStamp.setText( new DateHandler(stamp.getTimestamp()).toShortString());
         NumberFormat format = new DecimalFormat("#00.0000");
         holder.lat.setText(format.format(stamp.getLat()));
         holder.lon.setText(format.format(stamp.getLon()));

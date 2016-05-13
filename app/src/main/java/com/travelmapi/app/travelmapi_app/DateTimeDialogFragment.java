@@ -101,6 +101,7 @@ public class DateTimeDialogFragment extends DialogFragment {
     public void setFlag(int flag){
         mFlag = flag;
     }
+
     @OnClick(R.id.fragment_date_time_button_next)
     void nextClick(){
         mDate.setVisibility(View.GONE);
@@ -120,7 +121,7 @@ public class DateTimeDialogFragment extends DialogFragment {
     @OnClick(R.id.fragment_date_time_button_finish)
     void finishClick(){
         DateFormat format = new SimpleDateFormat(DATE_FORMAT, Locale.US);
-        String dateString = mDate.getYear() + "/" + (mDate.getMonth()+1) + "/" + mDate.getDayOfMonth() + " " + mHour + ":" + mMinute + ":00" ;
+        String dateString = mDate.getYear() + "/" + (mDate.getMonth()+1) + "/" + mDate.getDayOfMonth() + " "+ mHour + ":"+ mMinute  + ":" + 00;
         try {
             mDefaultDate = format.parse(dateString);
             if(mListener != null){

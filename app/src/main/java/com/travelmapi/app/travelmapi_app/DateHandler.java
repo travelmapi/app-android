@@ -22,7 +22,6 @@ public class DateHandler {
 
     public String toString(){
         DateFormat formater = new SimpleDateFormat(DATE_FORMAT);
-        formater.setTimeZone(TimeZone.getTimeZone("GMT"));
         String result = formater.format(mDate);
         int offset = TimeZone.getDefault().getOffset(Calendar.getInstance().getTimeInMillis())/(1000*60*60);
         if(offset > 0){
@@ -31,6 +30,12 @@ public class DateHandler {
             result = result + " GMT " + String.format("%03d", offset)+":00";
         }
         return result;
+    }
+
+    public String toShortString(){
+
+        DateFormat formater = new SimpleDateFormat(DATE_FORMAT);
+        return formater.format(mDate);
     }
 
     public void setDate(Date date){

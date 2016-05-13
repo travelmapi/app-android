@@ -21,6 +21,7 @@ import com.travelmapi.app.travelmapi_app.models.Trip;
 import java.util.Date;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class AlarmService extends Service implements LocationListener {
@@ -66,10 +67,17 @@ public class AlarmService extends Service implements LocationListener {
         for (int i = 0; i< trips.size(); i++) {
             Trip trip = trips.get(i);
             if (active(trip)) {
-                if(trip.getStamps().size() > 0 && trip.getStamps().last().getLat() == location.getLatitude() && trip.getStamps().last().getLon() == location.getLongitude()){
-                    realm.beginTransaction();
-                    trip.getStamps().last().setTimestamp(new Date());
-                    realm.commitTransaction();
+                RealmList<TravelStamp> stamps = trip.getStamps();
+
+                //check and see if the last two logged locations are considered the same location
+                if(stamps.size() > 1 &&
+                        withinDistance(stamps.last().getLat(),stamps.last().getLon(), stamps.get(stamps.size()-2).getLat(), stamps.get(stamps.size()-2).getLon()) &&
+                        withinDistance(location, stamps.last().getLat(),stamps.last().getLon())){
+
+                    //update most recent log
+                        realm.beginTransaction();
+                        trip.getStamps().last().setTimestamp(new Date());
+                        realm.commitTransaction();
                 }else {
                     Log.d(TAG, trip.getName());
                     realm.beginTransaction();
@@ -102,5 +110,24 @@ public class AlarmService extends Service implements LocationListener {
     public void onProviderDisabled(String provider) {
         Log.d(TAG, "provider disabled");
 
+    }
+
+    //TODO: Figure out actual acceptable tolerance
+    private boolean withinDistance(Location location, double lat, double lon){
+        if( Math.abs(location.getLongitude() - lon) > .0001){
+            if(Math.abs(location.getLatitude() - lat) > .0001){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean withinDistance(double lat, double lon, double lat2, double lon2){
+        if( Math.abs(lon2 - lon) > .0001){
+            if(Math.abs(lat2 - lat) > .0001){
+                return true;
+            }
+        }
+        return false;
     }
 }

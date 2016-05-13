@@ -14,18 +14,22 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.travelmapi.app.travelmapi_app.alarms.AlarmReceiver;
+import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class SettingsActivity extends AppCompatActivity {
     public static final String ARG_USER_ID = "USER_ID";
     public static final String ARG_DEVICE_ID = "DEVICE_ID";
-    public static final String ARG_INTERVAL = "INTERVAL";
+    public static final String ARG_TRACKER_INTERVAL = "TRACKER_INTERVAL";
+    public static final String ARG_UPDATE_INTERVAL = "UPDATE_INTERVAL";
     public static final String PREFERENCES = "SETTINGS";
 
     @BindView(R.id.activity_setting_edittext_device_id)
@@ -36,6 +40,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     @BindView(R.id.activity_setting_spinner_tracking_speed)
     Spinner mTrackingSpeed;
+
+    @BindView(R.id.activity_setting_spinner_update_speed)
+    Spinner mUpdateSpeed;
+
+    @BindView(R.id.activity_setting_textview_items_sync)
+    TextView mItemsSync;
 
     @BindView(R.id.button_list_settings)
     Button mSettings;
@@ -49,10 +59,28 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
 
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
+        ArrayAdapter<CharSequence> trackingAdapter = ArrayAdapter.createFromResource(this,
                 R.array.interval_values,
                 R.layout.support_simple_spinner_dropdown_item);
-        mTrackingSpeed.setAdapter(spinnerAdapter);
+        mTrackingSpeed.setAdapter(trackingAdapter);
+        mDeviceId.setText(Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ANDROID_ID));
+
+
+        ArrayAdapter<CharSequence> updateAdapter = ArrayAdapter.createFromResource(this,
+                R.array.update_intervals,
+                R.layout.support_simple_spinner_dropdown_item);
+        mUpdateSpeed.setAdapter(updateAdapter);
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<TravelStamp> stamps = realm.where(TravelStamp.class).findAll();
+        int count = 0;
+        for(TravelStamp stamp : stamps){
+            if(stamp.isSync()){
+                count++;
+            }
+        }
+        mItemsSync.setText(String.format("%d of %d Items are synchronized", count, stamps.size()));
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mSettings.setBackground(getDrawable(R.drawable.bordered_background_active));
@@ -66,16 +94,16 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
-            String android_id = Settings.Secure.getString(getContentResolver(),
-                    Settings.Secure.ANDROID_ID);
+        String android_id = mDeviceId.getText().toString();
 
         editor.putString(ARG_DEVICE_ID, android_id);
 
         if(!mUserId.getText().toString().equals("")){
             editor.putString(ARG_USER_ID, mUserId.getText().toString());
         }
-        editor.putLong(ARG_INTERVAL, intervalMapper(mTrackingSpeed.getSelectedItem().toString()));
-        editor.commit();
+        editor.putLong(ARG_TRACKER_INTERVAL, trackerIntervalMapper(mTrackingSpeed.getSelectedItem().toString()));
+        editor.putLong(ARG_UPDATE_INTERVAL, trackerIntervalMapper(mUpdateSpeed.getSelectedItem().toString()));
+        editor.apply();
         startAlarm();
     }
 
@@ -84,24 +112,50 @@ public class SettingsActivity extends AppCompatActivity {
      * @param interval the string value from the spinner
      * @return the amount of time in miliseconds
      */
-    private long intervalMapper(String interval){
+    private long trackerIntervalMapper(String interval){
         switch (interval) {
-            case "10 s":
+            case "10 seconds":
                 return 10 * 1000;
-            case "30 s":
+            case "30 seconds":
                 return 30 * 1000;
-            case "1 min":
+            case "1 minute":
                 return 60 * 1000;
-            case "5 min":
+            case "5 minutes":
                 return 5 * 60 * 1000;
-            case "10 min":
+            case "10 minutes":
                 return 10 * 60 * 1000;
-            case "15 min":
+            case "15 minutes":
                 return 15 * 60 * 1000;
-            case "30 min":
+            case "30 minutes":
                 return 30 * 60 * 1000;
             default:
                 return 10 * 1000;
+        }
+
+    }
+
+    private long updateIntervalMapper(String interval){
+        switch (interval) {
+            case "30 seconds":
+                return 30 * 1000;
+            case "1 minute":
+                return 60 * 1000;
+            case "5 minutes":
+                return 5 * 60 * 1000;
+            case "10 minutes":
+                return 10 * 60 * 1000;
+            case "30 minutes":
+                return 30 * 60 * 1000;
+            case "1 hour":
+                return 60 * 60 * 1000;
+            case "6 hours":
+                return 6 * 60 * 60 * 1000;
+            case "12 hours":
+                return 12 * 60 * 60 * 1000;
+            case "24 hours":
+                return 24 * 60 * 60 * 1000;
+            default:
+                return 6 * 60 * 60 * 1000;
         }
 
     }
@@ -113,7 +167,7 @@ public class SettingsActivity extends AppCompatActivity {
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
 
-        long interval = preferences.getLong(SettingsActivity.ARG_INTERVAL, 15000);
+        long interval = preferences.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

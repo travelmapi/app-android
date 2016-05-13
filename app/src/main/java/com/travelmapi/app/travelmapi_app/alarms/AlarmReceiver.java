@@ -31,7 +31,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver{
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         SharedPreferences pref = context.getSharedPreferences(SettingsActivity.PREFERENCES, Context.MODE_PRIVATE);
-        long interval = pref.getLong(SettingsActivity.ARG_INTERVAL, 15000);
+        long interval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             manager.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+interval, pendingIntent);
         }else{

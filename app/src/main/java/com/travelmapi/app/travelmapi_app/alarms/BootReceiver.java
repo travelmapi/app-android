@@ -24,12 +24,12 @@ public class BootReceiver extends BroadcastReceiver {
             /* Setting the alarm here */
 
             Intent alarmIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
-
+            Toast.makeText(context, "ALARM SET", Toast.LENGTH_LONG).show();
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, alarmIntent, 0);
 
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             SharedPreferences pref = context.getSharedPreferences(SettingsActivity.PREFERENCES, Context.MODE_PRIVATE);
-            long interval = pref.getLong(SettingsActivity.ARG_INTERVAL, 15000);
+            long interval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 manager.setExact(AlarmManager.RTC_WAKEUP, interval, pendingIntent);
             }else{

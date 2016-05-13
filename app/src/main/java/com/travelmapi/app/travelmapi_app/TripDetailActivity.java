@@ -21,6 +21,8 @@ import org.w3c.dom.Text;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -62,10 +64,18 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
         setContentView(R.layout.activity_trip_detail);
         ButterKnife.bind(this);
         String tripId = getIntent().getStringExtra(TripsViewActivity.ARG_TRIP);
+
+        //get all travel stamps
         Realm realm = Realm.getDefaultInstance();
         mTrip = realm.where(Trip.class).equalTo("id", tripId).findFirst();
         RealmList<TravelStamp> stamps = mTrip.getStamps();
-        mAdapter = new StampRecyclerViewAdapter(stamps, this);
+        RealmList<TravelStamp> tStamps = new RealmList<>();
+        for(int i = stamps.size() -1; i >= 0; i--){
+            tStamps.add(stamps.get(i));
+        }
+
+
+        mAdapter = new StampRecyclerViewAdapter(tStamps, this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mName.setText(mTrip.getName());
