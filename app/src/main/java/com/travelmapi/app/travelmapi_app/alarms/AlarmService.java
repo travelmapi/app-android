@@ -114,8 +114,8 @@ public class AlarmService extends Service implements LocationListener {
 
     //TODO: Figure out actual acceptable tolerance
     private boolean withinDistance(Location location, double lat, double lon){
-        if( Math.abs(location.getLongitude() - lon) > .0001){
-            if(Math.abs(location.getLatitude() - lat) > .0001){
+        if( Math.abs(location.getLongitude() - lon) < .001){
+            if(Math.abs(location.getLatitude() - lat) < .001){
                 return true;
             }
         }
@@ -123,8 +123,8 @@ public class AlarmService extends Service implements LocationListener {
     }
 
     private boolean withinDistance(double lat, double lon, double lat2, double lon2){
-        if( Math.abs(lon2 - lon) > .0001){
-            if(Math.abs(lat2 - lat) > .0001){
+        if( Math.abs(lon2 - lon) < .001){
+            if(Math.abs(lat2 - lat) < .001){
                 return true;
             }
         }
