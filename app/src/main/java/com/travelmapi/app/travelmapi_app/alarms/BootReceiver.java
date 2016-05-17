@@ -29,7 +29,7 @@ public class BootReceiver extends BroadcastReceiver {
 
             //get intents for sync reciever
 
-            Intent syncIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
+            Intent syncIntent = new Intent(context.getApplicationContext(), SyncReceiver.class);
             PendingIntent syncPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, syncIntent, 0);
 
         //get alarm manager to set alarms

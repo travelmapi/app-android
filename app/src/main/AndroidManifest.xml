@@ -27,6 +27,8 @@
         <activity android:name=".TripDetailActivity" />
 
         <receiver android:name=".alarms.AlarmReceiver" />
+        <receiver android:name=".alarms.SyncReceiver" />
+
         <receiver
             android:name=".alarms.BootReceiver"
             android:enabled="true"
@@ -36,9 +38,10 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".alarms.AlarmReceiver" />
 
-        <service android:name=".alarms.LogSyncService" />
+        <service android:name=".alarms.LogSyncService"
+            android:enabled="true"
+            android:exported="true" />
         <service
             android:name=".alarms.AlarmService"
             android:enabled="true"

@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.travelmapi.app.travelmapi_app.alarms.AlarmReceiver;
 import com.travelmapi.app.travelmapi_app.alarms.LogSyncService;
+import com.travelmapi.app.travelmapi_app.alarms.SyncReceiver;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 
 import butterknife.BindView;
@@ -114,7 +115,7 @@ public class SettingsActivity extends AppCompatActivity {
             editor.putString(ARG_USER_ID, mUserId.getText().toString());
         }
         editor.putLong(ARG_TRACKER_INTERVAL, trackerIntervalMapper(mTrackingSpeed.getSelectedItem().toString()));
-        editor.putLong(ARG_UPDATE_INTERVAL, trackerIntervalMapper(mUpdateSpeed.getSelectedItem().toString()));
+        editor.putLong(ARG_UPDATE_INTERVAL, updateIntervalMapper(mUpdateSpeed.getSelectedItem().toString()));
         editor.apply();
         startAlarm();
         Toast.makeText(this, R.string.settings_saved, Toast.LENGTH_SHORT).show();
@@ -174,20 +175,26 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void startAlarm() {
-        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
+
+        Intent syncIntent = new Intent(getApplicationContext(), SyncReceiver.class);
+        PendingIntent syncPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, syncIntent, 0);
+
 
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
 
         long interval = preferences.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
-
+        long syncInterval = preferences.getLong(ARG_UPDATE_INTERVAL, 60 * 1000);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+interval, pendingIntent);
+            manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+syncInterval, syncPendingIntent);
         }else{
 
             manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), syncInterval, syncPendingIntent);
         }
     }
 
