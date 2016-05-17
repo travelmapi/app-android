@@ -1,6 +1,7 @@
 package com.travelmapi.app.travelmapi_app;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +19,10 @@ public class DateHandler {
         mDate = date;
         mCalendar  = Calendar.getInstance();
         mCalendar.setTime(mDate);
+    }
+
+    public DateHandler(){
+
     }
 
     public String toString(){
@@ -42,6 +47,19 @@ public class DateHandler {
         mDate = date;
         mCalendar  = Calendar.getInstance();
         mCalendar.setTime(mDate);
+    }
+
+    public void setDate(String date){
+        DateFormat formater = new SimpleDateFormat(DATE_FORMAT);
+        try {
+            mDate = formater.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Date getDate(){
+        return mDate;
     }
 
     public int getDay(){

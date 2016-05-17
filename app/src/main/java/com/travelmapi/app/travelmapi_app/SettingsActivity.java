@@ -10,6 +10,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.travelmapi.app.travelmapi_app.alarms.AlarmReceiver;
+import com.travelmapi.app.travelmapi_app.alarms.LogSyncService;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 
 import butterknife.BindView;
@@ -59,6 +61,9 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
+
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         ArrayAdapter<CharSequence> trackingAdapter = ArrayAdapter.createFromResource(this,
                 R.array.interval_values,
@@ -206,6 +211,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     @OnClick(R.id.button_list_show_log)
     void logClick(){
+    }
 
+    @OnClick(R.id.activity_setting_button_sync)
+    void syncClick(){
+        startService(new Intent(getApplicationContext(), LogSyncService.class));
     }
 }

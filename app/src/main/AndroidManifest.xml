@@ -38,11 +38,11 @@
         </receiver>
         <receiver android:name=".alarms.AlarmReceiver" />
 
+        <service android:name=".alarms.LogSyncService" />
         <service
             android:name=".alarms.AlarmService"
             android:enabled="true"
             android:exported="true" />
-
         <activity android:name=".SettingsActivity" />
 
     </application>

@@ -1,5 +1,10 @@
 package com.travelmapi.app.travelmapi_app.models;
 
+import android.content.SharedPreferences;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 
 /**
@@ -14,5 +19,12 @@ public class TripHelper {
         }
         return false;
     }
-    
+
+    public static JSONObject toJson(Trip trip){
+        JSONObject json = new JSONObject();
+//        json.put("name"
+        return null;
+    }
+
+
 }

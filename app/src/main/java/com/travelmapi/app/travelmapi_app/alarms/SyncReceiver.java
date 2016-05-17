@@ -7,33 +7,30 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.content.WakefulBroadcastReceiver;
+
 import com.travelmapi.app.travelmapi_app.SettingsActivity;
 
 
-public class AlarmReceiver extends WakefulBroadcastReceiver{
+public class SyncReceiver extends WakefulBroadcastReceiver {
 
-    private static final String TAG = AlarmReceiver.class.getSimpleName();
-    // The app's AlarmManager, which provides access to the system alarm services.
     private AlarmManager alarmMgr;
-    // The pending intent that is triggered when the alarm fires.
-    private PendingIntent pendingIntent;
-
+    private  PendingIntent pendingIntent;
     @Override
     public void onReceive(Context context, Intent intent) {
-        alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        context.startService(new Intent(context.getApplicationContext(), AlarmService.class));
 
-        Intent alarmIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
+        alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        context.startService(new Intent(context.getApplicationContext(), LogSyncService.class));
+
+        Intent alarmIntent = new Intent(context.getApplicationContext(), SyncReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
 
         SharedPreferences pref = context.getSharedPreferences(SettingsActivity.PREFERENCES, Context.MODE_PRIVATE);
-        long interval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
+        long interval = pref.getLong(SettingsActivity.ARG_UPDATE_INTERVAL, 60 * 1000);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             alarmMgr.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+interval, pendingIntent);
         }else{
             alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
         }
-
     }
 
     /**
@@ -46,4 +43,5 @@ public class AlarmReceiver extends WakefulBroadcastReceiver{
             alarmMgr.cancel(pendingIntent);
         }
     }
+
 }

@@ -15,6 +15,15 @@ public class TravelStamp extends RealmObject {
     private double lon;
     private boolean sync;
     private Date syncDate;
+    private Trip trip;
+
+    public Trip getTrip() {
+        return trip;
+    }
+
+    public void setTrip(Trip trip) {
+        this.trip = trip;
+    }
 
     public int getId() {
         return id;

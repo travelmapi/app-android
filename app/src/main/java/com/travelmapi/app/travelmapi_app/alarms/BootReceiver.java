@@ -23,17 +23,29 @@ public class BootReceiver extends BroadcastReceiver {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             /* Setting the alarm here */
 
+            //get intents to for Alarm reciever
             Intent alarmIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
-            Toast.makeText(context, "ALARM SET", Toast.LENGTH_LONG).show();
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, alarmIntent, 0);
 
+            //get intents for sync reciever
+
+            Intent syncIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
+            PendingIntent syncPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, syncIntent, 0);
+
+        //get alarm manager to set alarms
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             SharedPreferences pref = context.getSharedPreferences(SettingsActivity.PREFERENCES, Context.MODE_PRIVATE);
-            long interval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
+
+            long logInterval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
+            long syncInterval = pref.getLong(SettingsActivity.ARG_UPDATE_INTERVAL, 60 * 1000);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                manager.setExact(AlarmManager.RTC_WAKEUP, interval, pendingIntent);
+                //set exact alarms for kitkat and above
+                manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+logInterval, pendingIntent);
+                manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+syncInterval, syncPendingIntent);
             }else{
-                manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+                //set exact alarm for bellow kitkat
+                manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), logInterval, pendingIntent);
+                manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), syncInterval, syncPendingIntent);
             }
             Log.d(TAG, "Alarm Set");
         }

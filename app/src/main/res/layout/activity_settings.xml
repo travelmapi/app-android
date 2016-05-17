@@ -41,7 +41,9 @@
                 android:id="@+id/activity_setting_edittext_user_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/AppTheme.EditText"/>
+                style="@style/AppTheme.EditText"
+                android:inputType="text"
+                />
             <TextView
                 android:id="@+id/activity_setting_textview_device_id"
                 android:layout_width="match_parent"
@@ -52,7 +54,8 @@
                 android:id="@+id/activity_setting_edittext_device_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/AppTheme.EditText"/>
+                style="@style/AppTheme.EditText"
+                android:inputType="text"/>
             <TextView
                 android:id="@+id/activity_setting_textview_tracking_speed"
                 android:layout_width="match_parent"

@@ -79,6 +79,7 @@ public class AlarmService extends Service implements LocationListener {
                     stamp.setTimestamp(new Date());
                     stamp.setSyncDate(null);
                     stamp.setId(trip.getStamps().size()+1);
+                    stamp.setTrip(trip);
                     trip.getStamps().add(stamp);
                     realm.commitTransaction();
                 }

@@ -57,15 +57,12 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
         Realm realm = Realm.getDefaultInstance();
 
         for(String id:ids) {
-            RealmResults<Trip> results = realm.where(Trip.class).equalTo("id", id).findAll();
+            Trip trip = realm.where(Trip.class).equalTo("id", id).findFirst();
             realm.beginTransaction();
-            if(results.size() > 0) {
-                RealmList<TravelStamp> stamps = results.get(0).getStamps();
+            if(trip.isValid()) {
+                RealmResults<TravelStamp> stamps = realm.where(TravelStamp.class).equalTo("trip.id",trip.getId()).findAll();
                 stamps.clear();
-                for(TravelStamp stamp:stamps){
-                    stamp.removeFromRealm();
-                }
-                results.removeLast();
+                trip.removeFromRealm();
             }
             realm.commitTransaction();
             mAdapter.notifyDataSetChanged();
