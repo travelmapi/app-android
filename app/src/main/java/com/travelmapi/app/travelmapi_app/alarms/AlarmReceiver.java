@@ -1,6 +1,7 @@
 package com.travelmapi.app.travelmapi_app.alarms;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import com.travelmapi.app.travelmapi_app.SettingsActivity;
+import com.travelmapi.app.travelmapi_app.exceptions.CrashHandler;
 
 
 public class AlarmReceiver extends WakefulBroadcastReceiver{
@@ -33,6 +35,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver{
         }else{
             alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
         }
+
+
 
     }
 

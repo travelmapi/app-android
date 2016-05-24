@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.travelmapi.app.travelmapi_app.exceptions.CrashHandler;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -14,6 +15,7 @@ import io.realm.RealmConfiguration;
 public class ApplicationSingleton extends Application {
     private static ApplicationSingleton mInstance;
     private RequestQueue mRequestQueue;
+    private CrashHandler crashHandler;
 
     /**
      * creates instances of the Application Singleton and Volley Request Queue
@@ -28,7 +30,7 @@ public class ApplicationSingleton extends Application {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(config);
-
+        crashHandler = new CrashHandler(this);
     }
 
     /**

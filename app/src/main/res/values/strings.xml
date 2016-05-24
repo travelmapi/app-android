@@ -43,8 +43,10 @@
     <string name="save_settings">Save Settings</string>
     <string name="data_synchronization">Data Synchronization</string>
     <string name="synchronize_now">Synchronize now</string>
-    <string name="update_speed">Update Speed</string>
+    <string name="update_speed">Synchronization Speed</string>
     <string name="settings_saved">Settings Saved</string>
     <string name="inactive">Inactive</string>
     <string name="active">Active</string>
+    <string name="currently_running">is currently running</string>
+    <string name="num_trips_active">There are %d active trips</string>
 </resources>

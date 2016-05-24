@@ -1,7 +1,8 @@
 package com.travelmapi.app.travelmapi_app.alarms;
 
 import android.Manifest;
-import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +14,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import com.travelmapi.app.travelmapi_app.R;
+import com.travelmapi.app.travelmapi_app.StartTravelActivity;
+import com.travelmapi.app.travelmapi_app.exceptions.CrashHandler;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import com.travelmapi.app.travelmapi_app.models.TripHelper;
@@ -27,7 +33,7 @@ import io.realm.RealmResults;
 
 public class AlarmService extends Service implements LocationListener {
     private static final String TAG = AlarmService.class.getSimpleName();
-
+    private static final double TOLERENCE = .0002;
     public AlarmService() {
     }
 
@@ -39,12 +45,18 @@ public class AlarmService extends Service implements LocationListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+
         Log.d(TAG, "Trigger Alarm");
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+            locationPermission();
             return START_NOT_STICKY;
         }
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(CrashHandler.NOTIFICATION_GPS);
         locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, Looper.myLooper() );
         return START_STICKY;
     }
@@ -55,21 +67,25 @@ public class AlarmService extends Service implements LocationListener {
         Log.d(TAG, location.toString());
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Trip> trips = realm.where(Trip.class).findAll();
+
+        int count = 0;
         for (int i = 0; i< trips.size(); i++) {
             Trip trip = trips.get(i);
             if (TripHelper.active(trip)) {
+                count++;
                 RealmList<TravelStamp> stamps = trip.getStamps();
 
-                //check and see if the last two logged locations are considered the same location
-                if(stamps.size() > 1 &&
-                        withinDistance(stamps.last().getLat(),stamps.last().getLon(), stamps.get(stamps.size()-2).getLat(), stamps.get(stamps.size()-2).getLon()) &&
-                        withinDistance(location, stamps.last().getLat(),stamps.last().getLon())){
-
-                    //update most recent log
-                        realm.beginTransaction();
-                        trip.getStamps().last().setTimestamp(new Date());
-                        realm.commitTransaction();
-                }else {
+//                check and see if the last two logged locations are considered the same location
+//                if(stamps.size() > 1 &&
+//                        withinDistance(stamps.last().getLat(),stamps.last().getLon(), stamps.get(stamps.size()-2).getLat(), stamps.get(stamps.size()-2).getLon()) &&
+//
+//                        withinDistance(location, stamps.last().getLat(),stamps.last().getLon())){
+//
+//                    //update most recent log
+//                        realm.beginTransaction();
+//                        trip.getStamps().last().setTimestamp(new Date());
+//                        realm.commitTransaction();
+//                }else {
                     Log.d(TAG, trip.getName());
                     realm.beginTransaction();
                     TravelStamp stamp = new TravelStamp();
@@ -82,9 +98,54 @@ public class AlarmService extends Service implements LocationListener {
                     stamp.setTrip(trip);
                     trip.getStamps().add(stamp);
                     realm.commitTransaction();
-                }
+//                }
             }
         }
+
+        if(count == 0){
+            /**
+             * Probably should cancel alarm service
+             * should restart alarm when new trip created
+             */
+            NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            mgr.cancel(CrashHandler.NOTIFICATION_TRIP);
+            return;
+        }
+
+        Intent gpsOptionsIntent = new Intent(getApplicationContext() ,StartTravelActivity.class);
+
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(
+                        this,
+                        0,
+                        gpsOptionsIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.launcher)
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText(String.format(getString(R.string.num_trips_active),count))
+                        .setOngoing(true)
+                        .setContentIntent(resultPendingIntent);
+
+        NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mgr.notify(CrashHandler.NOTIFICATION_TRIP, mBuilder.build());
+
+
+        //shows current location for debug purposes
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.launcher)
+                        .setContentTitle("Current Location")
+                        .setContentText(String.valueOf(location.getLatitude()) + " , " + String.valueOf(location.getLongitude()))
+                        .setOngoing(true)
+                        .setContentIntent(resultPendingIntent);
+
+        mgr.notify(0, builder.build());
+
     }
 
     @Override
@@ -102,12 +163,14 @@ public class AlarmService extends Service implements LocationListener {
     public void onProviderDisabled(String provider) {
         Log.d(TAG, "provider disabled");
 
+        locationPermission();
+
     }
 
     //TODO: Figure out actual acceptable tolerance
     private boolean withinDistance(Location location, double lat, double lon){
-        if( Math.abs(location.getLongitude() - lon) < .001){
-            if(Math.abs(location.getLatitude() - lat) < .001){
+        if( Math.abs(location.getLongitude() - lon) < TOLERENCE){
+            if(Math.abs(location.getLatitude() - lat) < TOLERENCE){
                 return true;
             }
         }
@@ -115,11 +178,36 @@ public class AlarmService extends Service implements LocationListener {
     }
 
     private boolean withinDistance(double lat, double lon, double lat2, double lon2){
-        if( Math.abs(lon2 - lon) < .001){
-            if(Math.abs(lat2 - lat) < .001){
+        if( Math.abs(lon2 - lon) < TOLERENCE){
+            if(Math.abs(lat2 - lat) < TOLERENCE){
                 return true;
             }
         }
         return false;
+    }
+
+    private void locationPermission(){
+
+        Intent gpsOptionsIntent = new Intent(
+                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(
+                        this,
+                        0,
+                        gpsOptionsIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.launcher)
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText("Please enable GPS")
+                        .setContentIntent(resultPendingIntent);
+
+        NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mgr.notify(CrashHandler.NOTIFICATION_GPS, mBuilder.build());
     }
 }
