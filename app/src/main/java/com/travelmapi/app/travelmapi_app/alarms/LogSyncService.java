@@ -22,30 +22,15 @@ import org.json.JSONObject;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-/**
- * Created by sam on 5/15/16.
- */
 public class LogSyncService extends Service implements Response.ErrorListener, Response.Listener<JSONObject> {
 
-    public static final String URL = "http://192.168.122.1/stamp/upload";
+    public static final String URL = "http://app.travelmapi.com/stamp/upload";
     private static final String TAG = LogSyncService.class.getSimpleName();
-    LogSyncListener mListener;
 
-    public LogSyncService(){
-
-    }
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    public interface LogSyncListener{
-        public void onSync(boolean sucess);
-    }
-
-    public LogSyncService(LogSyncListener listener){
-        mListener = listener;
     }
 
     @Override

@@ -18,37 +18,45 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".WelcomeActivity">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
-        <activity android:name=".StartTravelActivity"/>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".StartTravelActivity" />
         <activity android:name=".TripsViewActivity" />
         <activity android:name=".TripDetailActivity" />
 
         <receiver android:name=".alarms.AlarmReceiver" />
         <receiver android:name=".alarms.SyncReceiver" />
-
         <receiver
             android:name=".alarms.BootReceiver"
             android:enabled="true"
             android:exported="true">
-            <intent-filter  android:priority="500">
+            <intent-filter android:priority="500">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
 
-        <service android:name=".alarms.LogSyncService"
+        <service
+            android:name=".alarms.LogSyncService"
             android:enabled="true"
             android:exported="true" />
         <service
             android:name=".alarms.AlarmService"
             android:enabled="true"
             android:exported="true" />
-        <activity android:name=".SettingsActivity" />
 
+        <activity android:name=".SettingsActivity" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".TripMapActivity"
+            android:label="@string/title_activity_trip_map"/>
     </application>
 
 </manifest>

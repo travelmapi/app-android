@@ -15,25 +15,21 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-
 import com.travelmapi.app.travelmapi_app.R;
 import com.travelmapi.app.travelmapi_app.StartTravelActivity;
 import com.travelmapi.app.travelmapi_app.exceptions.CrashHandler;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import com.travelmapi.app.travelmapi_app.models.TripHelper;
-
 import java.util.Date;
-
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class AlarmService extends Service implements LocationListener {
     private static final String TAG = AlarmService.class.getSimpleName();
-    private static final double TOLERENCE = .0002;
+    private static final double TOLERANCE = .0002;
     public AlarmService() {
     }
 
@@ -46,7 +42,6 @@ public class AlarmService extends Service implements LocationListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-
         Log.d(TAG, "Trigger Alarm");
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -57,13 +52,16 @@ public class AlarmService extends Service implements LocationListener {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(CrashHandler.NOTIFICATION_GPS);
-        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, Looper.myLooper() );
+        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, Looper.myLooper());
         return START_STICKY;
     }
 
     @Override
     public void onLocationChanged(Location location) {
-    Log.d(TAG, "LOCATION CHANGES");
+        if(location == null){
+            return;
+        }
+        Log.d(TAG, "LOCATION CHANGES");
         Log.d(TAG, location.toString());
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Trip> trips = realm.where(Trip.class).findAll();
@@ -75,10 +73,13 @@ public class AlarmService extends Service implements LocationListener {
                 count++;
                 RealmList<TravelStamp> stamps = trip.getStamps();
 
-//                check and see if the last two logged locations are considered the same location
+
+                /**
+                 * check and see if the last two logged locations are considered the same location
+                 * Bug is most likely comming from comment code
+                 */
 //                if(stamps.size() > 1 &&
 //                        withinDistance(stamps.last().getLat(),stamps.last().getLon(), stamps.get(stamps.size()-2).getLat(), stamps.get(stamps.size()-2).getLon()) &&
-//
 //                        withinDistance(location, stamps.last().getLat(),stamps.last().getLon())){
 //
 //                    //update most recent log
@@ -122,7 +123,7 @@ public class AlarmService extends Service implements LocationListener {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
-
+        //set notification with number of active trips
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.launcher)
@@ -162,15 +163,13 @@ public class AlarmService extends Service implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
         Log.d(TAG, "provider disabled");
-
         locationPermission();
-
     }
 
     //TODO: Figure out actual acceptable tolerance
     private boolean withinDistance(Location location, double lat, double lon){
-        if( Math.abs(location.getLongitude() - lon) < TOLERENCE){
-            if(Math.abs(location.getLatitude() - lat) < TOLERENCE){
+        if( Math.abs(location.getLongitude() - lon) < TOLERANCE){
+            if(Math.abs(location.getLatitude() - lat) < TOLERANCE){
                 return true;
             }
         }
@@ -178,8 +177,8 @@ public class AlarmService extends Service implements LocationListener {
     }
 
     private boolean withinDistance(double lat, double lon, double lat2, double lon2){
-        if( Math.abs(lon2 - lon) < TOLERENCE){
-            if(Math.abs(lat2 - lat) < TOLERENCE){
+        if( Math.abs(lon2 - lon) < TOLERANCE){
+            if(Math.abs(lat2 - lat) < TOLERANCE){
                 return true;
             }
         }
@@ -198,7 +197,6 @@ public class AlarmService extends Service implements LocationListener {
                         gpsOptionsIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
-
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())

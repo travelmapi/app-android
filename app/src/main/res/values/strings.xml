@@ -9,7 +9,7 @@
         <item>15 minutes</item>
         <item>30 minutes</item>
     </array>
-    <array name="update_intervals" >
+    <array name="update_intervals">
         <item>30 seconds</item>
         <item>1 minute</item>
         <item>5 minutes</item>
@@ -49,4 +49,6 @@
     <string name="active">Active</string>
     <string name="currently_running">is currently running</string>
     <string name="num_trips_active">There are %d active trips</string>
+    <string name="title_activity_trip_map">Map</string>
+    <string name="map">Map</string>
 </resources>

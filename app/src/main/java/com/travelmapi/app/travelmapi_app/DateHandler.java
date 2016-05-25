@@ -15,14 +15,11 @@ public class DateHandler {
     private Date mDate;
     private Calendar mCalendar;
     public static final String DATE_FORMAT = "yyyy-MM-dd kk:mm:ss";
+
     public DateHandler(Date date){
         mDate = date;
         mCalendar  = Calendar.getInstance();
         mCalendar.setTime(mDate);
-    }
-
-    public DateHandler(){
-
     }
 
     public String toString(){

@@ -3,9 +3,6 @@ package com.travelmapi.app.travelmapi_app.exceptions;
 import android.app.NotificationManager;
 import android.content.Context;
 
-/**
- * Created by sam on 5/19/16.
- */
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     public static final int NOTIFICATION_TRIP = 1;

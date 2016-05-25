@@ -4,9 +4,6 @@ import java.util.Date;
 
 import io.realm.RealmObject;
 
-/**
- * Created by sam on 5/3/16.
- */
 public class TravelStamp extends RealmObject {
 
     private int id;

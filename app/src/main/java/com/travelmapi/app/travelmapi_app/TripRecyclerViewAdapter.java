@@ -7,23 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import com.travelmapi.app.travelmapi_app.models.TripHelper;
-
-import java.security.cert.TrustAnchor;
 import java.util.ArrayList;
-import java.util.Date;
-
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
-/**
- * Created by sam on 5/3/16.
- */
 public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerViewAdapter.TripViewHolder> implements View.OnClickListener {
 
     public interface OnTripRowClickListener{

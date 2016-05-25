@@ -6,15 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
-
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-
 import io.realm.RealmList;
 
 /**
@@ -44,8 +38,6 @@ public class StampRecyclerViewAdapter extends RecyclerView.Adapter<StampRecycler
     @Override
     public void onBindViewHolder(final StampViewHolder holder, int position) {
         TravelStamp stamp = mStamps.get(position);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
-        String tStamp = dateFormat.format(stamp.getTimestamp());
         holder.timeStamp.setText( new DateHandler(stamp.getTimestamp()).toShortString());
         NumberFormat format = new DecimalFormat("#00.0000");
         holder.lat.setText(format.format(stamp.getLat()));

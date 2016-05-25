@@ -100,6 +100,8 @@ public class SettingsActivity extends AppCompatActivity {
             mSettings.setTextColor(Color.WHITE);
         }
 
+        setSyncSpinner();
+        setTrackerSpinner();
     }
 
     @OnClick(R.id.activity_setting_button_save)
@@ -115,7 +117,7 @@ public class SettingsActivity extends AppCompatActivity {
             editor.putString(ARG_USER_ID, mUserId.getText().toString());
         }
         editor.putLong(ARG_TRACKER_INTERVAL, trackerIntervalMapper(mTrackingSpeed.getSelectedItem().toString()));
-        editor.putLong(ARG_UPDATE_INTERVAL, updateIntervalMapper(mUpdateSpeed.getSelectedItem().toString()));
+        editor.putLong(ARG_UPDATE_INTERVAL, syncIntervalMapper(mUpdateSpeed.getSelectedItem().toString()));
         editor.apply();
         startAlarm();
         Toast.makeText(this, R.string.settings_saved, Toast.LENGTH_SHORT).show();
@@ -145,10 +147,27 @@ public class SettingsActivity extends AppCompatActivity {
             default:
                 return 10 * 1000;
         }
-
     }
 
-    private long updateIntervalMapper(String interval){
+    private void setTrackerSpinner(){
+        SharedPreferences preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        long length = preferences.getLong(ARG_TRACKER_INTERVAL, 10*1000);
+        if(length == 10 * 1000) {
+            mTrackingSpeed.setSelection(0);
+        } else if (length == 30 * 1000){
+            mTrackingSpeed.setSelection(1);
+        }else if (length == 60 * 1000){
+            mTrackingSpeed.setSelection(2);
+        }else if (length == 5 * 60 * 1000){
+            mTrackingSpeed.setSelection(3);
+        }else if (length == 15 * 60 * 1000){
+            mTrackingSpeed.setSelection(3);
+        }else if (length == 30 * 60 * 1000){
+            mTrackingSpeed.setSelection(4);
+        }
+    }
+
+    private long syncIntervalMapper(String interval){
         switch (interval) {
             case "30 seconds":
                 return 30 * 1000;
@@ -171,7 +190,30 @@ public class SettingsActivity extends AppCompatActivity {
             default:
                 return 6 * 60 * 60 * 1000;
         }
+    }
 
+    private void setSyncSpinner(){
+        SharedPreferences preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        long length = preferences.getLong(ARG_UPDATE_INTERVAL, 30*1000);
+        if(length == 30 * 1000) {
+            mUpdateSpeed.setSelection(0);
+        } else if (length == 60 * 1000){
+            mUpdateSpeed.setSelection(1);
+        }else if (length == 5 * 60 * 1000){
+            mUpdateSpeed.setSelection(2);
+        }else if (length == 10 * 60 * 1000){
+            mUpdateSpeed.setSelection(3);
+        }else if (length == 30 * 60 * 1000){
+            mUpdateSpeed.setSelection(4);
+        }else if (length == 60 * 60 * 1000){
+            mUpdateSpeed.setSelection(5);
+        }else if (length == 6 * 60 * 60 * 1000){
+            mUpdateSpeed.setSelection(6);
+        }else if (length == 12 * 60 * 60 * 1000){
+            mUpdateSpeed.setSelection(7);
+        }else if (length == 24 * 60 * 60 * 1000){
+            mUpdateSpeed.setSelection(8);
+        }
     }
 
     private void startAlarm() {
@@ -181,7 +223,6 @@ public class SettingsActivity extends AppCompatActivity {
         Intent syncIntent = new Intent(getApplicationContext(), SyncReceiver.class);
         PendingIntent syncPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, syncIntent, 0);
 
-
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
 
@@ -189,10 +230,9 @@ public class SettingsActivity extends AppCompatActivity {
         long syncInterval = preferences.getLong(ARG_UPDATE_INTERVAL, 60 * 1000);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+interval, pendingIntent);
-            manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+syncInterval, syncPendingIntent);
+            manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + interval, pendingIntent);
+            manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + syncInterval, syncPendingIntent);
         }else{
-
             manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
             manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), syncInterval, syncPendingIntent);
         }
@@ -203,21 +243,11 @@ public class SettingsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, TripsViewActivity.class);
         startActivity(intent);
         finish();
-
-    }
-
-    @OnClick(R.id.button_list_settings)
-    void settingsClick(){
-
     }
 
     @OnClick(R.id.button_list_start_travel)
     void travelClick(){
         finish();
-    }
-
-    @OnClick(R.id.button_list_show_log)
-    void logClick(){
     }
 
     @OnClick(R.id.activity_setting_button_sync)

@@ -1,7 +1,6 @@
 package com.travelmapi.app.travelmapi_app.alarms;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -11,8 +10,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
-
 import com.travelmapi.app.travelmapi_app.R;
 import com.travelmapi.app.travelmapi_app.SettingsActivity;
 

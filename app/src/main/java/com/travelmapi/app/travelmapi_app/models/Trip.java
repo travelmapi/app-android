@@ -6,9 +6,6 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-/**
- * Created by sam on 5/3/16.
- */
 public class Trip extends RealmObject {
 
     @PrimaryKey

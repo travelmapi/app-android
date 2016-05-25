@@ -38,7 +38,6 @@ public class SyncReceiver extends WakefulBroadcastReceiver {
      * @param context
      */
     public void cancelAlarm(Context context) {
-        // If the alarm has been set, cancel it.
         if (alarmMgr!= null) {
             alarmMgr.cancel(pendingIntent);
         }

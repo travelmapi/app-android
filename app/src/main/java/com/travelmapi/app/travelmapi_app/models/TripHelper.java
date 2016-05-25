@@ -1,15 +1,8 @@
 package com.travelmapi.app.travelmapi_app.models;
 
-import android.content.SharedPreferences;
-
-import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.Date;
 
-/**
- * Created by sam on 5/13/16.
- */
 public class TripHelper {
 
     public static boolean active(Trip trip){

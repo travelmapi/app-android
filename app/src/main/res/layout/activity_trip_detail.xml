@@ -64,6 +64,14 @@
         android:padding="0dp"
         android:textAlignment="textStart"
         tools:text="From 2016-03-08 15:31:18 \nTo 2016-03-08 18:31:18 "/>
+
+    <Button
+        android:id="@+id/activity_trip_detail_button_view_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/map"
+        android:layout_alignBaseline="@id/activity_trip_detail_textview_timestamp"
+        android:layout_alignParentEnd="true"/>
     <LinearLayout
         android:id="@+id/activity_trip_detail_linear_layout_header"
         android:layout_width="match_parent"

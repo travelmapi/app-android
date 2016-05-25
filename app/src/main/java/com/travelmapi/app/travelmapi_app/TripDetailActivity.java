@@ -4,36 +4,20 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import com.travelmapi.app.travelmapi_app.models.TripHelper;
-
-import org.w3c.dom.Text;
-
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnLongClick;
 import io.realm.Realm;
 import io.realm.RealmList;
 
@@ -41,6 +25,7 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
 
     private static final int FLAG_START = 0;
     private static final int FLAG_END = 1;
+    public static final String ARG_TRIP_ID = "TRIP_ID";
     @BindView(R.id.activity_trip_detail_recycler_view)
     RecyclerView mRecyclerView;
 
@@ -136,6 +121,12 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
         finish();
     }
 
+    @OnClick(R.id.activity_trip_detail_button_view_map)
+    void mapClick(){
+        Intent intent = new Intent(this, TripMapActivity.class);
+        intent.putExtra(ARG_TRIP_ID, mTrip.getId());
+        startActivity(intent);
+    }
 
     @Override
     public void fragmentComplete(String name) {
