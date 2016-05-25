@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -24,7 +26,7 @@ import io.realm.RealmResults;
 
 public class LogSyncService extends Service implements Response.ErrorListener, Response.Listener<JSONObject> {
 
-    public static final String URL = "http://app.travelmapi.com/stamp/upload";
+    public static final String URL = "http://app.travelmapi.com?controller=stamp&action=upload";
     private static final String TAG = LogSyncService.class.getSimpleName();
 
     @Nullable
@@ -101,6 +103,7 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
             e.printStackTrace();
         }
         onStartCommand(null, 0,0);
+        Toast.makeText(this, "TravelMapi Sync Complete", Toast.LENGTH_SHORT).show();
     }
 
 
