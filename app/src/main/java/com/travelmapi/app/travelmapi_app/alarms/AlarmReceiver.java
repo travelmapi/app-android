@@ -19,12 +19,18 @@ public class AlarmReceiver extends WakefulBroadcastReceiver{
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        SharedPreferences pref = context.getSharedPreferences(SettingsActivity.PREFERENCES, Context.MODE_PRIVATE);
+
+        if(!pref.getBoolean(SettingsActivity.ARG_TRACK, true)){
+            return;
+        }
+
         alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         Intent alarmIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
 
-        SharedPreferences pref = context.getSharedPreferences(SettingsActivity.PREFERENCES, Context.MODE_PRIVATE);
         long interval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             alarmMgr.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+interval, pendingIntent);

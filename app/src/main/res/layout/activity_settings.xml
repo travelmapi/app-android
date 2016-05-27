@@ -110,6 +110,22 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:text="@string/synchronize_now"/>
+
+            <Button
+                android:id="@+id/activity_setting_button_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/stop_logging"
+                style="@style/AppTheme.Button"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+            <Button
+                android:id="@+id/activity_setting_button_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/start_logging"
+                android:visibility="gone"
+                style="@style/AppTheme.Button"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"/>
         </LinearLayout>
     </ScrollView>
 

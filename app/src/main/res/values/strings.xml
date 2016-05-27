@@ -51,4 +51,8 @@
     <string name="num_trips_active">There are %d active trips</string>
     <string name="title_activity_trip_map">Map</string>
     <string name="map">Map</string>
+    <string name="stop_logging">Stop Logging</string>
+    <string name="start_logging">Start Logging</string>
+    <string name="logging_stopped">Logging is stopped</string>
+    <string name="logging_started">Logging Started</string>
 </resources>

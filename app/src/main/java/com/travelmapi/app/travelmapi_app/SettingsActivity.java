@@ -1,6 +1,7 @@
 package com.travelmapi.app.travelmapi_app;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -34,6 +36,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String ARG_DEVICE_ID = "DEVICE_ID";
     public static final String ARG_TRACKER_INTERVAL = "TRACKER_INTERVAL";
     public static final String ARG_UPDATE_INTERVAL = "UPDATE_INTERVAL";
+    public static final String ARG_TRACK = "TRACK";
     public static final String PREFERENCES = "SETTINGS";
 
     @BindView(R.id.activity_setting_edittext_device_id)
@@ -53,6 +56,13 @@ public class SettingsActivity extends AppCompatActivity {
 
     @BindView(R.id.button_list_settings)
     Button mSettings;
+
+    @BindView(R.id.activity_setting_button_start)
+    Button mStart;
+
+    @BindView(R.id.activity_setting_button_stop)
+    Button mStop;
+
 
 
     private PendingIntent pendingIntent;
@@ -83,6 +93,11 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         String userId = preferences.getString(ARG_USER_ID, "");
         mUserId.setText(userId);
+
+        if(!preferences.getBoolean(ARG_TRACK, true)){
+            mStart.setVisibility(View.VISIBLE);
+            mStop.setVisibility(View.GONE);
+        }
 
         Realm realm = Realm.getDefaultInstance();
         RealmResults<TravelStamp> stamps = realm.where(TravelStamp.class).findAll();
@@ -254,4 +269,33 @@ public class SettingsActivity extends AppCompatActivity {
     void syncClick(){
         startService(new Intent(getApplicationContext(), LogSyncService.class));
     }
+
+    @OnClick(R.id.activity_setting_button_stop)
+    void stopClick(){
+
+        SharedPreferences pref = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean(ARG_TRACK, false);
+
+        editor.apply();
+        mStart.setVisibility(View.VISIBLE);
+        mStop.setVisibility(View.GONE);
+
+        NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mgr.cancelAll();
+        Toast.makeText(SettingsActivity.this, R.string.logging_stopped, Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.activity_setting_button_start)
+    void startClick(){
+        SharedPreferences pref = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean(ARG_TRACK, true);
+        editor.apply();
+        startAlarm();
+        mStart.setVisibility(View.GONE);
+        mStop.setVisibility(View.VISIBLE);
+        Toast.makeText(this, R.string.logging_started, Toast.LENGTH_SHORT).show();
+    }
+
 }

@@ -36,7 +36,7 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent intent, int                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    flags, int startId) {
         Log.d(TAG, "Syncing to Server");
         SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
         Realm realm = Realm.getDefaultInstance();
@@ -56,6 +56,7 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
         }
         if(count == 0){
             Log.d(TAG, "All Logs Synced");
+            Toast.makeText(this, "TravelMapi Sync Complete", Toast.LENGTH_SHORT).show();
             return START_NOT_STICKY;
         }
         JSONObject requestJson = new JSONObject();
@@ -103,7 +104,6 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
             e.printStackTrace();
         }
         onStartCommand(null, 0,0);
-        Toast.makeText(this, "TravelMapi Sync Complete", Toast.LENGTH_SHORT).show();
     }
 
 

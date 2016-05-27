@@ -135,18 +135,6 @@ public class AlarmService extends Service implements LocationListener {
         NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mgr.notify(CrashHandler.NOTIFICATION_TRIP, mBuilder.build());
 
-
-        //shows current location for debug purposes
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.drawable.launcher)
-                        .setContentTitle("Current Location")
-                        .setContentText(String.valueOf(location.getLatitude()) + " , " + String.valueOf(location.getLongitude()))
-                        .setOngoing(true)
-                        .setContentIntent(resultPendingIntent);
-
-        mgr.notify(0, builder.build());
-
     }
 
     @Override
