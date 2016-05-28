@@ -27,6 +27,7 @@ import io.realm.RealmResults;
 public class LogSyncService extends Service implements Response.ErrorListener, Response.Listener<JSONObject> {
 
     public static final String URL = "http://app.travelmapi.com?controller=stamp&action=upload";
+    public static final String DEBUG_URL = "http://10.0.2.2?controller=stamp&action=upload";
     private static final String TAG = LogSyncService.class.getSimpleName();
 
     @Nullable
@@ -68,6 +69,7 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
         }
 
         Log.d(TAG, requestJson.toString());
+
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, requestJson, this, this);
 
         ApplicationSingleton.getInstance().getRequestQueue().add(request);
@@ -91,7 +93,7 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
         try {
             JSONArray results = response.getJSONArray("data");
             for(int i = 0; i < results.length(); i++){
-                String id = results.getJSONObject(i).getString("story_id");
+                String id = results.getJSONObject(i).getString("trip_id");
                 int stampId = results.getJSONObject(i).getInt("stamp_id");
                 Trip trip = realm.where(Trip.class).equalTo("id", id ).findFirst();
                 realm.beginTransaction();
@@ -111,13 +113,13 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
         JSONObject json = new JSONObject();
         try {
             json.put("stamp_id", stamp.getId());
-            json.put("story_id", trip.getId());
+            json.put("trip_id", trip.getId());
             json.put("user_id", userId);
             json.put("device_id",deviceId);
             json.put("timestamp", new DateHandler(stamp.getTimestamp()).toShortString());
             json.put("lat", stamp.getLat());
             json.put("long", stamp.getLon());
-
+            json.put("trip_name", trip.getName());
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -78,15 +78,15 @@ public class AlarmService extends Service implements LocationListener {
                  * check and see if the last two logged locations are considered the same location
                  * Bug is most likely comming from comment code
                  */
-//                if(stamps.size() > 1 &&
-//                        withinDistance(stamps.last().getLat(),stamps.last().getLon(), stamps.get(stamps.size()-2).getLat(), stamps.get(stamps.size()-2).getLon()) &&
-//                        withinDistance(location, stamps.last().getLat(),stamps.last().getLon())){
-//
-//                    //update most recent log
-//                        realm.beginTransaction();
-//                        trip.getStamps().last().setTimestamp(new Date());
-//                        realm.commitTransaction();
-//                }else {
+                if(stamps.size() > 1 &&
+                        withinDistance(stamps.last().getLat(),stamps.last().getLon(), stamps.get(stamps.size()-2).getLat(), stamps.get(stamps.size()-2).getLon()) &&
+                        withinDistance(location, stamps.last().getLat(),stamps.last().getLon())){
+
+                    //update most recent log
+                        realm.beginTransaction();
+                        trip.getStamps().last().setTimestamp(new Date());
+                        realm.commitTransaction();
+                }else {
                     Log.d(TAG, trip.getName());
                     realm.beginTransaction();
                     TravelStamp stamp = new TravelStamp();
@@ -99,7 +99,7 @@ public class AlarmService extends Service implements LocationListener {
                     stamp.setTrip(trip);
                     trip.getStamps().add(stamp);
                     realm.commitTransaction();
-//                }
+                }
             }
         }
 
