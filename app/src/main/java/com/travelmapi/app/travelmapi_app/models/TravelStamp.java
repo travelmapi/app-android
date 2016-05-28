@@ -2,24 +2,27 @@ package com.travelmapi.app.travelmapi_app.models;
 
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class TravelStamp extends RealmObject {
 
+    @PrimaryKey
     private int id;
     private Date timestamp;
     private double lat;
     private double lon;
     private boolean sync;
     private Date syncDate;
-    private Trip trip;
+    private RealmList<Trip> trips;
 
-    public Trip getTrip() {
-        return trip;
+    public RealmList<Trip> getTrips() {
+        return trips;
     }
 
-    public void setTrip(Trip trip) {
-        this.trip = trip;
+    public void setTrips(RealmList<Trip> trips) {
+        this.trips = trips;
     }
 
     public int getId() {

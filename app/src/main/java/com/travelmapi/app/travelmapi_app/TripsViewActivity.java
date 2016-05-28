@@ -16,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class TripsViewActivity extends AppCompatActivity implements TripRecyclerViewAdapter.OnTripRowClickListener{
@@ -54,13 +55,26 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
 
         for(String id:ids) {
             Trip trip = realm.where(Trip.class).equalTo("id", id).findFirst();
-            realm.beginTransaction();
+
+            //Change to handle realm list of trips
+            //TODO: this is deleting timestamp no matter what.
+            //stamp.getTrips() == null
             if(trip.isValid()) {
-                RealmResults<TravelStamp> stamps = realm.where(TravelStamp.class).equalTo("trip.id",trip.getId()).findAll();
-                stamps.clear();
+                RealmList<TravelStamp> stamps = realm.where(Trip.class).findFirst().getStamps();
+                for(int i = 0; i< stamps.size(); i++){
+                    realm.beginTransaction();
+                    TravelStamp stamp = stamps.get(i);
+                    if(stamp.getTrips().size() > 1){
+                        stamp.getTrips().remove(trip);
+                    }else{
+                        stamp.removeFromRealm();
+                    }
+                    realm.commitTransaction();
+                }
+                realm.beginTransaction();
                 trip.removeFromRealm();
+                realm.commitTransaction();
             }
-            realm.commitTransaction();
             mAdapter.notifyDataSetChanged();
 
         }

@@ -66,44 +66,14 @@ public class AlarmService extends Service implements LocationListener {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Trip> trips = realm.where(Trip.class).findAll();
 
-        int count = 0;
-        for (int i = 0; i< trips.size(); i++) {
-            Trip trip = trips.get(i);
-            if (TripHelper.active(trip)) {
-                count++;
-                RealmList<TravelStamp> stamps = trip.getStamps();
-
-
-                /**
-                 * check and see if the last two logged locations are considered the same location
-                 * Bug is most likely comming from comment code
-                 */
-                if(stamps.size() > 1 &&
-                        withinDistance(stamps.last().getLat(),stamps.last().getLon(), stamps.get(stamps.size()-2).getLat(), stamps.get(stamps.size()-2).getLon()) &&
-                        withinDistance(location, stamps.last().getLat(),stamps.last().getLon())){
-
-                    //update most recent log
-                        realm.beginTransaction();
-                        trip.getStamps().last().setTimestamp(new Date());
-                        realm.commitTransaction();
-                }else {
-                    Log.d(TAG, trip.getName());
-                    realm.beginTransaction();
-                    TravelStamp stamp = new TravelStamp();
-                    stamp.setLat(location.getLatitude());
-                    stamp.setLon(location.getLongitude());
-                    stamp.setSync(false);
-                    stamp.setTimestamp(new Date());
-                    stamp.setSyncDate(null);
-                    stamp.setId(trip.getStamps().size()+1);
-                    stamp.setTrip(trip);
-                    trip.getStamps().add(stamp);
-                    realm.commitTransaction();
-                }
+        RealmList<Trip> activeTrips = new RealmList<>();
+        for(Trip trip : trips ){
+            if(TripHelper.active(trip)){
+                activeTrips.add(trip);
             }
         }
 
-        if(count == 0){
+        if(activeTrips.size() == 0){
             /**
              * Probably should cancel alarm service
              * should restart alarm when new trip created
@@ -112,6 +82,43 @@ public class AlarmService extends Service implements LocationListener {
             mgr.cancel(CrashHandler.NOTIFICATION_TRIP);
             return;
         }
+
+//                /** code for updating redundant stamp
+//                 * check and see if the last two logged locations are considered the same location
+//                 * Bug is most likely comming from comment code
+//                 */
+////                if(stamps.size() > 1 &&
+////                        withinDistance(stamps.last().getLat(),stamps.last().getLon(), stamps.get(stamps.size()-2).getLat(), stamps.get(stamps.size()-2).getLon()) &&
+////                        withinDistance(location, stamps.last().getLat(),stamps.last().getLon())){
+////
+////                    //update most recent log
+////                        realm.beginTransaction();
+////                        trip.getStamps().last().setTimestamp(new Date());
+////                        realm.commitTransaction();
+////                }
+
+        realm.beginTransaction();
+        TravelStamp stamp = realm.createObject(TravelStamp.class);
+        stamp.setLat(location.getLatitude());
+        stamp.setLon(location.getLongitude());
+        stamp.setSync(false);
+        stamp.setTimestamp(new Date());
+        stamp.setSyncDate(null);
+        stamp.setId(realm.where(TravelStamp.class).max("id").intValue()+1);
+        stamp.setTrips(activeTrips);
+        realm.copyToRealmOrUpdate(stamp);
+        realm.commitTransaction();
+
+        for(int i = 0; i< activeTrips.size(); i++){
+            Trip trip = activeTrips.get(i);
+            realm.beginTransaction();
+            trip.getStamps().add(stamp);
+            realm.copyToRealmOrUpdate(trip);
+            realm.commitTransaction();
+        }
+
+
+
 
         Intent gpsOptionsIntent = new Intent(getApplicationContext() ,StartTravelActivity.class);
 
@@ -128,7 +135,7 @@ public class AlarmService extends Service implements LocationListener {
                 new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.launcher)
                         .setContentTitle(getString(R.string.app_name))
-                        .setContentText(String.format(getString(R.string.num_trips_active),count))
+                        .setContentText(String.format(getString(R.string.num_trips_active),activeTrips.size()))
                         .setOngoing(true)
                         .setContentIntent(resultPendingIntent);
 
