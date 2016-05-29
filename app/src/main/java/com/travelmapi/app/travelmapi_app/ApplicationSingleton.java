@@ -1,10 +1,18 @@
 package com.travelmapi.app.travelmapi_app;
 
 import android.app.Application;
+import android.os.Environment;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.travelmapi.app.travelmapi_app.exceptions.CrashHandler;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -16,6 +24,8 @@ public class ApplicationSingleton extends Application {
     private static ApplicationSingleton mInstance;
     private RequestQueue mRequestQueue;
     private CrashHandler crashHandler;
+    public static BufferedWriter out;
+    private static File logFile;
 
     /**
      * creates instances of the Application Singleton and Volley Request Queue
@@ -31,6 +41,7 @@ public class ApplicationSingleton extends Application {
                 .build();
         Realm.setDefaultConfiguration(config);
         crashHandler = new CrashHandler(this);
+        createFileOnDevice(true);
     }
 
     /**
@@ -47,5 +58,38 @@ public class ApplicationSingleton extends Application {
      */
     public RequestQueue getRequestQueue() {
         return mRequestQueue;
+    }
+
+
+    public static void createFileOnDevice(Boolean append) {
+                /*
+                 * Function to initially create the log file and it also writes the time of creation to file.
+                 */
+        File Root = Environment.getExternalStorageDirectory();
+        if(Root.canWrite()){
+              logFile = new File(Root, "Log.txt");
+            try  {
+                FileWriter fileWriter = new FileWriter(logFile, true);
+                out = new BufferedWriter(fileWriter);
+                out.write("LOGS FOR TRAVELMAPI \n");
+                out.close();
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void writeToFile(String message) {
+        if(out == null){
+            return;
+        }
+        try {
+            FileWriter fileWriter = new FileWriter(logFile, true);
+            out = new BufferedWriter(fileWriter);
+            out.write(message + "\n");
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

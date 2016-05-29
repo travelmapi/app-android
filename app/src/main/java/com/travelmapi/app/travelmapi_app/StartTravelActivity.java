@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -59,6 +60,16 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
             mTravel.setBackground(getDrawable(R.drawable.bordered_background_active));
             mTravel.setTextColor(Color.WHITE);
         }
+
+        if( ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=PackageManager.PERMISSION_GRANTED ){
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_FINE_LOCATION);
+            ApplicationSingleton.createFileOnDevice(true);
+        }
+
+
+
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
             ActivityCompat.requestPermissions(this,

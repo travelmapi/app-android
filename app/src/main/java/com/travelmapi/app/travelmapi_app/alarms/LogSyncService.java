@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class LogSyncService extends Service implements Response.ErrorListener, Response.Listener<JSONObject> {
@@ -97,7 +98,7 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
                 int stampId = results.getJSONObject(i).getInt("stamp_id");
                 Trip trip = realm.where(Trip.class).equalTo("id", id ).findFirst();
                 realm.beginTransaction();
-                TravelStamp stamp = trip.getStamps().get(stampId - 1);
+                TravelStamp stamp = realm.where(TravelStamp.class).equalTo("id", stampId).findFirst();
                 stamp.setSync(true);
                 realm.commitTransaction();
             }

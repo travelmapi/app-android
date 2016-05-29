@@ -26,6 +26,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver{
             return;
         }
 
+        context.startService(new Intent(context.getApplicationContext(), AlarmService.class));
+
         alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         Intent alarmIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
@@ -38,7 +40,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver{
             alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
         }
 
-        context.startService(new Intent(context.getApplicationContext(), AlarmService.class));
     }
 
     /**

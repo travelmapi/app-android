@@ -24,11 +24,11 @@ public class BootReceiver extends BroadcastReceiver {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             /* Setting the alarm here */
 
-            //get intents to for Alarm reciever
+            //get intents to for Alarm receiver
             Intent alarmIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, alarmIntent, 0);
 
-            //get intents for sync reciever
+            //get intents for sync receiver
 
             Intent syncIntent = new Intent(context.getApplicationContext(), SyncReceiver.class);
             PendingIntent syncPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, syncIntent, 0);

@@ -10,19 +10,30 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.travelmapi.app.travelmapi_app.ApplicationSingleton;
+import com.travelmapi.app.travelmapi_app.DateHandler;
 import com.travelmapi.app.travelmapi_app.R;
 import com.travelmapi.app.travelmapi_app.StartTravelActivity;
 import com.travelmapi.app.travelmapi_app.exceptions.CrashHandler;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import com.travelmapi.app.travelmapi_app.models.TripHelper;
+
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Timer;
+
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
@@ -30,12 +41,12 @@ import io.realm.RealmResults;
 public class AlarmService extends Service implements LocationListener {
     private static final String TAG = AlarmService.class.getSimpleName();
     private static final double TOLERANCE = .0002;
+    private long timer;
     public AlarmService() {
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -52,17 +63,25 @@ public class AlarmService extends Service implements LocationListener {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(CrashHandler.NOTIFICATION_GPS);
+
+        timer = System.currentTimeMillis();
         locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, Looper.myLooper());
+
         return START_STICKY;
     }
 
     @Override
     public void onLocationChanged(Location location) {
+        long stopTimer = System.currentTimeMillis();
+        long elapsedTime = stopTimer - timer;
+
+//        Toast.makeText(getBaseContext(), String.valueOf(elapsedTime), Toast.LENGTH_SHORT).show();
         if(location == null){
             return;
         }
         Log.d(TAG, "LOCATION CHANGES");
         Log.d(TAG, location.toString());
+
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Trip> trips = realm.where(Trip.class).findAll();
 
@@ -117,16 +136,13 @@ public class AlarmService extends Service implements LocationListener {
             realm.commitTransaction();
         }
 
-
-
-
-        Intent gpsOptionsIntent = new Intent(getApplicationContext() ,StartTravelActivity.class);
+        Intent startIntent = new Intent(this, StartTravelActivity.class);
 
         PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(
                         this,
                         0,
-                        gpsOptionsIntent,
+                        startIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
@@ -142,6 +158,8 @@ public class AlarmService extends Service implements LocationListener {
         NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mgr.notify(CrashHandler.NOTIFICATION_TRIP, mBuilder.build());
 
+        ApplicationSingleton.writeToFile("Timestamp: " + new DateHandler(new Date()).toShortString());
+        ApplicationSingleton.writeToFile("Time to GPS: " + elapsedTime);
     }
 
     @Override
