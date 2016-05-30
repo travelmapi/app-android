@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -13,26 +14,20 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
-
 import com.travelmapi.app.travelmapi_app.ApplicationSingleton;
 import com.travelmapi.app.travelmapi_app.DateHandler;
 import com.travelmapi.app.travelmapi_app.R;
+import com.travelmapi.app.travelmapi_app.SettingsActivity;
 import com.travelmapi.app.travelmapi_app.StartTravelActivity;
 import com.travelmapi.app.travelmapi_app.exceptions.CrashHandler;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import com.travelmapi.app.travelmapi_app.models.TripHelper;
-
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Timer;
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -41,7 +36,8 @@ import io.realm.RealmResults;
 public class AlarmService extends Service implements LocationListener {
     private static final String TAG = AlarmService.class.getSimpleName();
     private static final double TOLERANCE = .0002;
-    private long timer;
+    private long mTimestamp;
+    private String id;
     public AlarmService() {
     }
 
@@ -53,7 +49,12 @@ public class AlarmService extends Service implements LocationListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        id = UUID.randomUUID().toString();
         Log.d(TAG, "Trigger Alarm");
+        ApplicationSingleton.writeToFile("");
+        ApplicationSingleton.writeToFile("Timestamp: " + new DateHandler(new Date()).toShortString());
+        ApplicationSingleton.writeToFile("Service Started, ID: " + id);
+
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
@@ -64,22 +65,36 @@ public class AlarmService extends Service implements LocationListener {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(CrashHandler.NOTIFICATION_GPS);
 
-        timer = System.currentTimeMillis();
-        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, Looper.myLooper());
+        SharedPreferences pref = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
+        long interval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 10 * 1000);
 
+        //change so that location is updated only when moving.
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0, this);
+//                requestSingleUpdate(LocationManager.GPS_PROVIDER, this, Looper.myLooper());
+        mTimestamp = System.currentTimeMillis();
         return START_STICKY;
     }
 
+
+
     @Override
     public void onLocationChanged(Location location) {
-        long stopTimer = System.currentTimeMillis();
-        long elapsedTime = stopTimer - timer;
 
+        /**
+         * Things to do
+         * Check that accuracy is within threshold. Keep Track of logs and hold on to most accurate.
+         */
+        long curTime = System.currentTimeMillis();
+
+        Log.d(TAG, "Location Found");
+        SharedPreferences pref = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
 //        Toast.makeText(getBaseContext(), String.valueOf(elapsedTime), Toast.LENGTH_SHORT).show();
-        if(location == null){
+
+        if(location == null || curTime - mTimestamp <  pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 10 * 1000)){
             return;
         }
-        Log.d(TAG, "LOCATION CHANGES");
+        mTimestamp = System.currentTimeMillis();
+        Log.d(TAG, "Logging Location");
         Log.d(TAG, location.toString());
 
         Realm realm = Realm.getDefaultInstance();
@@ -158,13 +173,15 @@ public class AlarmService extends Service implements LocationListener {
         NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mgr.notify(CrashHandler.NOTIFICATION_TRIP, mBuilder.build());
 
-        ApplicationSingleton.writeToFile("Timestamp: " + new DateHandler(new Date()).toShortString());
-        ApplicationSingleton.writeToFile("Time to GPS: " + elapsedTime);
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        Log.d(TAG, "Status CHANGES");
+        if(status == LocationProvider.OUT_OF_SERVICE){
+            Log.d(TAG, "OUT OF SERVICE");
+        }else {
+            Log.d(TAG, "Status CHANGES");
+        }
     }
 
     @Override

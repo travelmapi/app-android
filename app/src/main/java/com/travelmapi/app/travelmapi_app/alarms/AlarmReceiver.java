@@ -12,6 +12,7 @@ import com.travelmapi.app.travelmapi_app.SettingsActivity;
 public class AlarmReceiver extends WakefulBroadcastReceiver{
 
     private static final String TAG = AlarmReceiver.class.getSimpleName();
+    public static final String ARG_ALARM_READY = "ALARM_READY";
     // The app's AlarmManager, which provides access to the system alarm services.
     private AlarmManager alarmMgr;
     // The pending intent that is triggered when the alarm fires.
@@ -26,6 +27,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver{
             return;
         }
 
+
         context.startService(new Intent(context.getApplicationContext(), AlarmService.class));
 
         alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -33,12 +35,12 @@ public class AlarmReceiver extends WakefulBroadcastReceiver{
         Intent alarmIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
 
-        long interval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarmMgr.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+interval, pendingIntent);
-        }else{
-            alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
-        }
+//        long interval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            alarmMgr.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+interval, pendingIntent);
+//        }else{
+//            alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+//        }
 
     }
 
