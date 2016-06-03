@@ -17,6 +17,7 @@ import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
 import com.travelmapi.app.travelmapi_app.ApplicationSingleton;
 import com.travelmapi.app.travelmapi_app.DateHandler;
 import com.travelmapi.app.travelmapi_app.R;
@@ -26,6 +27,7 @@ import com.travelmapi.app.travelmapi_app.exceptions.CrashHandler;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import com.travelmapi.app.travelmapi_app.models.TripHelper;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -35,9 +37,10 @@ import io.realm.RealmResults;
 
 public class AlarmService extends Service implements LocationListener {
     private static final String TAG = AlarmService.class.getSimpleName();
-    private static final double TOLERANCE = .0002;
+    private static final double TOLERANCE = .00002;
     private long mTimestamp;
     private String id;
+
     public AlarmService() {
     }
 
@@ -57,7 +60,7 @@ public class AlarmService extends Service implements LocationListener {
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             locationPermission();
             return START_NOT_STICKY;
         }
@@ -69,12 +72,11 @@ public class AlarmService extends Service implements LocationListener {
         long interval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 10 * 1000);
 
         //change so that location is updated only when moving.
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 //                requestSingleUpdate(LocationManager.GPS_PROVIDER, this, Looper.myLooper());
         mTimestamp = System.currentTimeMillis();
         return START_STICKY;
     }
-
 
 
     @Override
@@ -90,9 +92,27 @@ public class AlarmService extends Service implements LocationListener {
         SharedPreferences pref = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
 //        Toast.makeText(getBaseContext(), String.valueOf(elapsedTime), Toast.LENGTH_SHORT).show();
 
+        if (!pref.getBoolean(SettingsActivity.ARG_TRACK, true)) {
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+                return;
+            }
+            locationManager.removeUpdates(this);
+        }
+
+        //checks timestamp to see if the log interval has passed
         if(location == null || curTime - mTimestamp <  pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 10 * 1000)){
             return;
         }
+
+        //checks accuracy of location, must be within 5 meters
+        //TODO: change this and add setting
+//        if (location.getAccuracy() > 5) {
+//            return;
+//        }
+
         mTimestamp = System.currentTimeMillis();
         Log.d(TAG, "Logging Location");
         Log.d(TAG, location.toString());
@@ -109,7 +129,7 @@ public class AlarmService extends Service implements LocationListener {
 
         if(activeTrips.size() == 0){
             /**
-             * Probably should cancel alarm service
+             * TODO: Probably should cancel alarm service
              * should restart alarm when new trip created
              */
             NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -117,39 +137,42 @@ public class AlarmService extends Service implements LocationListener {
             return;
         }
 
-//                /** code for updating redundant stamp
-//                 * check and see if the last two logged locations are considered the same location
-//                 * Bug is most likely comming from comment code
-//                 */
-////                if(stamps.size() > 1 &&
-////                        withinDistance(stamps.last().getLat(),stamps.last().getLon(), stamps.get(stamps.size()-2).getLat(), stamps.get(stamps.size()-2).getLon()) &&
-////                        withinDistance(location, stamps.last().getLat(),stamps.last().getLon())){
-////
-////                    //update most recent log
-////                        realm.beginTransaction();
-////                        trip.getStamps().last().setTimestamp(new Date());
-////                        realm.commitTransaction();
-////                }
+                /** code for updating redundant stamp
+                 * check and see if the last two logged locations are considered the same location
+                 * Bug is most likely comming from comment code
+                 */
 
-        realm.beginTransaction();
-        TravelStamp stamp = realm.createObject(TravelStamp.class);
-        stamp.setLat(location.getLatitude());
-        stamp.setLon(location.getLongitude());
-        stamp.setSync(false);
-        stamp.setTimestamp(new Date());
-        stamp.setSyncDate(null);
-        stamp.setId(realm.where(TravelStamp.class).max("id").intValue()+1);
-        stamp.setTrips(activeTrips);
-        realm.copyToRealmOrUpdate(stamp);
-        realm.commitTransaction();
+                RealmResults<TravelStamp> stamps = realm.where(TravelStamp.class).findAll();
+                if(stamps.size() > 1 &&
+                        withinDistance(stamps.last().getLat(),stamps.last().getLon(), stamps.get(stamps.size()-2).getLat(), stamps.get(stamps.size()-2).getLon()) &&
+                        withinDistance(location, stamps.last().getLat(),stamps.last().getLon())){
 
-        for(int i = 0; i< activeTrips.size(); i++){
-            Trip trip = activeTrips.get(i);
-            realm.beginTransaction();
-            trip.getStamps().add(stamp);
-            realm.copyToRealmOrUpdate(trip);
-            realm.commitTransaction();
-        }
+                    //update most recent log
+                        realm.beginTransaction();
+                        stamps.last().setTimestamp(new Date());
+                        realm.commitTransaction();
+                }else {
+
+                    realm.beginTransaction();
+                    TravelStamp stamp = realm.createObject(TravelStamp.class);
+                    stamp.setLat(location.getLatitude());
+                    stamp.setLon(location.getLongitude());
+                    stamp.setSync(false);
+                    stamp.setTimestamp(new Date());
+                    stamp.setSyncDate(null);
+                    stamp.setId(realm.where(TravelStamp.class).max("id").intValue() + 1);
+                    stamp.setTrips(activeTrips);
+                    realm.copyToRealmOrUpdate(stamp);
+                    realm.commitTransaction();
+
+                    for (int i = 0; i < activeTrips.size(); i++) {
+                        Trip trip = activeTrips.get(i);
+                        realm.beginTransaction();
+                        trip.getStamps().add(stamp);
+                        realm.copyToRealmOrUpdate(trip);
+                        realm.commitTransaction();
+                    }
+                }
 
         Intent startIntent = new Intent(this, StartTravelActivity.class);
 

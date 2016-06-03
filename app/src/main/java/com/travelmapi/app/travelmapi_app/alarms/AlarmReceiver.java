@@ -35,13 +35,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver{
         Intent alarmIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
 
-//        long interval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            alarmMgr.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+interval, pendingIntent);
-//        }else{
-//            alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
-//        }
-
     }
 
     /**

@@ -1,8 +1,10 @@
 package com.travelmapi.app.travelmapi_app.alarms;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.travelmapi.app.travelmapi_app.ApplicationSingleton;
 import com.travelmapi.app.travelmapi_app.DateHandler;
@@ -25,7 +28,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
-public class LogSyncService extends Service implements Response.ErrorListener, Response.Listener<JSONObject> {
+public class LogSyncService extends Service implements Response.ErrorListener, Response.Listener<JSONArray> {
 
     public static final String URL = "http://app.travelmapi.com?controller=stamp&action=upload";
     public static final String DEBUG_URL = "http://10.0.2.2?controller=stamp&action=upload";
@@ -38,8 +41,14 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
     }
 
     @Override
-    public int onStartCommand(Intent intent, int                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Syncing to Server");
+
+        if(!isOnline()){
+            return START_NOT_STICKY;
+        }
+
+
         SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
         Realm realm = Realm.getDefaultInstance();
         RealmResults<Trip> trips = realm.where(Trip.class). findAll();
@@ -61,17 +70,11 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
             Toast.makeText(this, "TravelMapi Sync Complete", Toast.LENGTH_SHORT).show();
             return START_NOT_STICKY;
         }
-        JSONObject requestJson = new JSONObject();
-        try {
-            requestJson.put("stamps", json);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return START_NOT_STICKY;
-        }
 
-        Log.d(TAG, requestJson.toString());
+        Log.d(TAG, json.toString());
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, requestJson, this, this);
+
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, URL, json, this, this);
 
         ApplicationSingleton.getInstance().getRequestQueue().add(request);
         return START_STICKY;
@@ -87,16 +90,15 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
     }
 
     @Override
-    public void onResponse(JSONObject response) {
+    public void onResponse(JSONArray response) {
         Log.d(TAG, "SUCESS");
         Log.d(TAG, response.toString());
         Realm realm = Realm.getDefaultInstance();
         try {
-            JSONArray results = response.getJSONArray("data");
+            JSONArray results = response;//response.getJSONArray("data");
             for(int i = 0; i < results.length(); i++){
-                String id = results.getJSONObject(i).getString("trip_id");
-                int stampId = results.getJSONObject(i).getInt("stamp_id");
-                Trip trip = realm.where(Trip.class).equalTo("id", id ).findFirst();
+                JSONObject resStamp = results.getJSONObject(i);
+                int stampId = resStamp.getInt("stamp_id");
                 realm.beginTransaction();
                 TravelStamp stamp = realm.where(TravelStamp.class).equalTo("id", stampId).findFirst();
                 stamp.setSync(true);
@@ -121,10 +123,21 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
             json.put("lat", stamp.getLat());
             json.put("long", stamp.getLon());
             json.put("trip_name", trip.getName());
+            json.put("start_date", new DateHandler(trip.getStart()).toShortString());
+            json.put("end_date", new DateHandler(trip.getEnd()).toShortString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         return json;
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        android.net.NetworkInfo networkinfo = cm.getActiveNetworkInfo();
+        if (networkinfo != null && networkinfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
 }

@@ -55,13 +55,16 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
         for(String id:ids) {
             Trip trip = realm.where(Trip.class).equalTo("id", id).findFirst();
 
-            if(trip.isValid()) {
+            if(trip != null) {
                 RealmList<TravelStamp> stamps = realm.where(Trip.class).equalTo("id", trip.getId()).findFirst().getStamps();
                 for(int i = 0; i< stamps.size(); i++){
                     realm.beginTransaction();
                     TravelStamp stamp = stamps.get(i);
                     if(stamp.getTrips().size() > 1){
-                        stamp.getTrips().remove(trip);
+                        RealmList<Trip> trips = stamp.getTrips();
+                        trips.remove(trip);
+                        stamp.setTrips(trips);
+                        realm.copyToRealmOrUpdate(stamp);
                     }else{
                         stamp.removeFromRealm();
                     }
@@ -72,7 +75,6 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
                 realm.commitTransaction();
             }
             mAdapter.notifyDataSetChanged();
-
         }
     }
 

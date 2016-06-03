@@ -61,13 +61,6 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
             mTravel.setTextColor(Color.WHITE);
         }
 
-        if( ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=PackageManager.PERMISSION_GRANTED ){
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PERMISSION_FINE_LOCATION);
-            ApplicationSingleton.createFileOnDevice(true);
-        }
-
 
 
 
@@ -78,6 +71,16 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
         }else{
             startAlarm();
         }
+
+        //remove when removing logging to file
+        if( ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=PackageManager.PERMISSION_GRANTED ){
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_FINE_LOCATION);
+            ApplicationSingleton.createFileOnDevice(true);
+        }
+
+
     }
 
     @Override

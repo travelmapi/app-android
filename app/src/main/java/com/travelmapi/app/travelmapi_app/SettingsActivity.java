@@ -166,7 +166,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void setTrackerSpinner(){
         SharedPreferences preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        long length = preferences.getLong(ARG_TRACKER_INTERVAL, 10*1000);
+        long length = preferences.getLong(ARG_TRACKER_INTERVAL, 60 * 1000);
         if(length == 10 * 1000) {
             mTrackingSpeed.setSelection(0);
         } else if (length == 30 * 1000){
@@ -175,10 +175,12 @@ public class SettingsActivity extends AppCompatActivity {
             mTrackingSpeed.setSelection(2);
         }else if (length == 5 * 60 * 1000){
             mTrackingSpeed.setSelection(3);
-        }else if (length == 15 * 60 * 1000){
-            mTrackingSpeed.setSelection(3);
-        }else if (length == 30 * 60 * 1000){
+        }else if (length == 10 * 60 * 1000){
             mTrackingSpeed.setSelection(4);
+        }else if (length == 15 * 60 * 1000){
+            mTrackingSpeed.setSelection(5);
+        }else if (length == 30 * 60 * 1000){
+            mTrackingSpeed.setSelection(6);
         }
     }
 
@@ -209,7 +211,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void setSyncSpinner(){
         SharedPreferences preferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        long length = preferences.getLong(ARG_UPDATE_INTERVAL, 30*1000);
+        long length = preferences.getLong(ARG_UPDATE_INTERVAL, 60 * 60 * 1000);
         if(length == 30 * 1000) {
             mUpdateSpeed.setSelection(0);
         } else if (length == 60 * 1000){
