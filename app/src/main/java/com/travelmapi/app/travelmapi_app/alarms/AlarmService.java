@@ -128,12 +128,15 @@ public class AlarmService extends Service implements LocationListener {
         }
 
         if(activeTrips.size() == 0){
-            /**
-             * TODO: Probably should cancel alarm service
-             * should restart alarm when new trip created
-             */
             NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mgr.cancel(CrashHandler.NOTIFICATION_TRIP);
+
+            //cancel logging.
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+                return;
+            }
+            locationManager.removeUpdates(this);
             return;
         }
 

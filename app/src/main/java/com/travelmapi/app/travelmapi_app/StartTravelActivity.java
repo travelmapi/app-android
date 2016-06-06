@@ -157,6 +157,7 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
         mStartDate = null;
         mEndDate = null;
         Toast.makeText(this, R.string.trip_created, Toast.LENGTH_SHORT).show();
+        startAlarm();
 
     }
 
@@ -173,16 +174,6 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
         startActivity(intent);
     }
 
-    @OnClick(R.id.button_list_start_travel)
-    void travelClick(){
-
-    }
-
-    @OnClick(R.id.button_list_show_log)
-    void logClick(){
-
-    }
-
     @OnClick(R.id.activity_start_travel_edittext_trip_start)
     void startClick(){
         android.app.FragmentManager manager = getFragmentManager();
@@ -192,6 +183,7 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
         dialog.setDate(mStartDate);
         dialog.show(manager, "date_time_dialog_fragment");
     }
+
     @OnClick(R.id.activity_start_travel_edittext_trip_end)
     void endClick(){
         android.app.FragmentManager manager = getFragmentManager();
@@ -201,6 +193,7 @@ public class StartTravelActivity extends AppCompatActivity implements DateTimeDi
         dialog.setDate(mEndDate);
         dialog.show(manager, "date_time_dialog_fragment");
     }
+
     @Override
     public void dialogComplete(Date date, int flag) {
         switch (flag){

@@ -12,6 +12,8 @@ import android.widget.Button;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -57,26 +59,26 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
 
             if(trip != null) {
                 RealmList<TravelStamp> stamps = realm.where(Trip.class).equalTo("id", trip.getId()).findFirst().getStamps();
-                for(int i = 0; i< stamps.size(); i++){
-                    realm.beginTransaction();
-                    TravelStamp stamp = stamps.get(i);
-                    if(stamp.getTrips().size() > 1){
-                        RealmList<Trip> trips = stamp.getTrips();
-                        trips.remove(trip);
-                        stamp.setTrips(trips);
-                        realm.copyToRealmOrUpdate(stamp);
-                    }else{
-                        stamp.removeFromRealm();
+
+                List<TravelStamp> stampsToDelete = new ArrayList<>();
+                for (TravelStamp stamp : stamps) {
+                    if (realm.where(Trip.class).equalTo("stamps.id", stamp.getId()).count() == 1) {
+                        stampsToDelete.add(stamp);
                     }
+                }
+                for (TravelStamp stamp : stampsToDelete) {
+                    realm.beginTransaction();
+                    stamp.removeFromRealm();
                     realm.commitTransaction();
                 }
                 realm.beginTransaction();
-                trip.removeFromRealm();
+                trip.removeFromRealm(); // delete this object
                 realm.commitTransaction();
             }
             mAdapter.notifyDataSetChanged();
         }
     }
+
 
 
     @Override

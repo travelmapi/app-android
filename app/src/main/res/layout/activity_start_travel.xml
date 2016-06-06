@@ -7,7 +7,7 @@
     <ImageView
         android:id="@+id/activity_start_travel_logo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:src="@drawable/logo"/>
     <TextView
         android:id="@+id/activity_start_travel_textview_title"
