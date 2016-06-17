@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.travelmapi.app.travelmapi_app.alarms.AlarmReceiver;
 import com.travelmapi.app.travelmapi_app.alarms.LogSyncService;
+import com.travelmapi.app.travelmapi_app.alarms.SyncAsyncTask;
 import com.travelmapi.app.travelmapi_app.alarms.SyncReceiver;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 
@@ -29,9 +31,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements RealmChangeListener {
     public static final String ARG_USER_ID = "USER_ID";
     public static final String ARG_DEVICE_ID = "DEVICE_ID";
     public static final String ARG_TRACKER_INTERVAL = "TRACKER_INTERVAL";
@@ -53,9 +56,6 @@ public class SettingsActivity extends AppCompatActivity {
 
     @BindView(R.id.activity_setting_textview_items_sync)
     TextView mItemsSync;
-
-    @BindView(R.id.button_list_settings)
-    Button mSettings;
 
     @BindView(R.id.activity_setting_button_start)
     Button mStart;
@@ -100,6 +100,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         Realm realm = Realm.getDefaultInstance();
+        realm.addChangeListener(this);
         RealmResults<TravelStamp> stamps = realm.where(TravelStamp.class).findAll();
         int count = 0;
         for(TravelStamp stamp : stamps){
@@ -108,12 +109,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
         mItemsSync.setText(String.format("%d of %d Items are synchronized", count, stamps.size()));
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mSettings.setBackground(getDrawable(R.drawable.bordered_background_active));
-            mSettings.setTextColor(Color.WHITE);
-        }
 
         setSyncSpinner();
         setTrackerSpinner();
@@ -243,33 +238,22 @@ public class SettingsActivity extends AppCompatActivity {
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
 
-        long interval = preferences.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
         long syncInterval = preferences.getLong(ARG_UPDATE_INTERVAL, 60 * 1000);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + interval, pendingIntent);
+            manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
             manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + syncInterval, syncPendingIntent);
         }else{
-            manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+            manager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),pendingIntent );
             manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), syncInterval, syncPendingIntent);
         }
     }
 
-    @OnClick(R.id.button_list_travel_list)
-    void listClick(){
-        Intent intent = new Intent(this, TripsViewActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    @OnClick(R.id.button_list_start_travel)
-    void travelClick(){
-        finish();
-    }
 
     @OnClick(R.id.activity_setting_button_sync)
     void syncClick(){
-        startService(new Intent(getApplicationContext(), LogSyncService.class));
+        SyncAsyncTask task = new SyncAsyncTask(getApplicationContext());
+        task.execute();
     }
 
     @OnClick(R.id.activity_setting_button_stop)
@@ -300,4 +284,17 @@ public class SettingsActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.logging_started, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onChange() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.addChangeListener(this);
+        RealmResults<TravelStamp> stamps = realm.where(TravelStamp.class).findAll();
+        int count = 0;
+        for(TravelStamp stamp : stamps){
+            if(stamp.isSync()){
+                count++;
+            }
+        }
+        mItemsSync.setText(String.format("%d of %d Items are synchronized", count, stamps.size()));
+    }
 }

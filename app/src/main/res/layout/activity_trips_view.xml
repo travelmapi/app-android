@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.travelmapi.app.travelmapi_app.TripsViewActivity">
     <ImageView
         android:id="@+id/activity_trips_view_logo"
@@ -16,29 +17,44 @@
         android:text="Travels List"
         android:layout_below="@id/activity_trips_view_logo"
         style="@style/AppTheme.Title"/>
-    <include
-        android:id="@+id/activity_trips_view_button_bar"
-        layout="@layout/button_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
 
-    <Button
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/activity_trips_view_button_delete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:src="@drawable/ic_delete"
+        app:fabSize="normal"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
-        style="@style/AppTheme.Button"
-        android:layout_above="@id/activity_trips_view_button_bar"
-        android:text="Delete selected"/>
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        app:backgroundTint="@color/colorAccent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/activity_trips_view_button_add"
+        android:src="@drawable/ic_add"
+        app:fabSize="normal"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        app:backgroundTint="#99CC00"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/activity_trips_view_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@drawable/scrollbar"
+        android:scrollbarSize="4dp"
         android:layout_above="@id/activity_trips_view_button_delete"
         android:layout_below="@id/activity_trips_view_textview_title"/>
 
 
+    <com.travelmapi.app.travelmapi_app.views.MainMenu
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/activity_trips_view_textview_title"
+        android:layout_alignTop="@id/activity_trips_view_textview_title"/>
 </RelativeLayout>

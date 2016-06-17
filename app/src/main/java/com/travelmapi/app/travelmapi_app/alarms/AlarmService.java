@@ -109,9 +109,10 @@ public class AlarmService extends Service implements LocationListener {
 
         //checks accuracy of location, must be within 5 meters
         //TODO: change this and add setting
-//        if (location.getAccuracy() > 5) {
-//            return;
-//        }
+        if (location.getAccuracy() > 20) {
+            Log.d(TAG, "LOG TOO INACCURATE");
+            return;
+        }
 
         mTimestamp = System.currentTimeMillis();
         Log.d(TAG, "Logging Location");
@@ -154,6 +155,7 @@ public class AlarmService extends Service implements LocationListener {
                         realm.beginTransaction();
                         stamps.last().setTimestamp(new Date());
                         realm.commitTransaction();
+                    Log.d(TAG, "Updating Log");
                 }else {
 
                     realm.beginTransaction();

@@ -17,6 +17,7 @@
         android:layout_below="@id/activity_start_travel_logo"
         style="@style/AppTheme.Title"
         />
+
     <TextView
         android:id="@+id/activity_start_travel_textview_trip_name"
         android:layout_width="wrap_content"
@@ -67,12 +68,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/activity_start_travel_edittext_trip_end"
         android:text="Save travel"
+        android:layout_marginTop="36dp"
         style="@style/AppTheme.Button"/>
-
-    <include
-        android:layout_width="match_parent"
+    <com.travelmapi.app.travelmapi_app.views.MainMenu
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        layout="@layout/button_bar"/>
-
+        android:layout_alignEnd="@id/activity_start_travel_textview_title"
+        android:layout_alignTop="@id/activity_start_travel_textview_title"
+        android:layout_marginTop="5dp"/>
 </RelativeLayout>

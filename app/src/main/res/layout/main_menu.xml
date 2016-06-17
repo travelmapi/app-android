@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_menue_layout"
+    android:orientation="vertical"
+    android:layout_width="150dp"
+    android:layout_height="150dp">
+    <FrameLayout
+        android:id="@+id/main_menu_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:background="@color/colorPrimary">
+        <Button
+            android:id="@+id/main_menu_show"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/ic_more_horiz"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:elevation="0dp"/>
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/main_menu_settings"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/settings"
+        android:layout_below="@id/main_menu_frame"
+        android:layout_alignParentEnd="true"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
+        />
+    <Button
+        android:id="@+id/main_menu_trip_list"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/trip_list"
+        android:layout_below="@id/main_menu_settings"
+        android:layout_alignParentEnd="true"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:background="@color/colorPrimary"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"/>
+</RelativeLayout>

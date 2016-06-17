@@ -16,44 +16,31 @@
         android:layout_below="@id/activity_trip_detail_logo"
         android:text="@string/show_log"
         style="@style/AppTheme.Title"/>
-    <include layout="@layout/button_bar"
-        android:id="@+id/activity_trip_detail_button_bar"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"/>
+
+    <ImageView
+        android:id="@+id/activity_trip_detail_image_active"
+        android:background="@drawable/active_trip"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_below="@id/activity_trip_detail_title"/>
     <Button
         android:id="@+id/activity_trip_detail_button_trip_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/activity_trip_detail_title"
         tools:text="Sam's Trip"
+        android:layout_toEndOf="@id/activity_trip_detail_image_active"
         android:textAlignment="textStart"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:padding="0dp"
         android:textSize="18dp"
         android:textColor="@color/colorPrimary"
+
         />
-    <TextView
-        android:id="@+id/activity_trip_detail_textview_logs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_vertical_margin"
-        android:layout_alignParentEnd="true"
-        android:layout_alignBaseline="@id/activity_trip_detail_button_trip_name"
-        tools:text="150 logs"
-        />
-    <TextView
-        android:id="@+id/activity_trip_detail_textview_active"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_vertical_margin"
-        android:layout_toStartOf="@id/activity_trip_detail_textview_logs"
-        android:layout_alignBaseline="@id/activity_trip_detail_button_trip_name"
-        tools:text="Inactive"
-        />
+
     <Button
         android:id="@+id/activity_trip_detail_textview_timestamp"
         android:layout_width="wrap_content"
@@ -63,13 +50,20 @@
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:padding="0dp"
         android:textAlignment="textStart"
+        android:fontFamily="sans-serif-light"
         tools:text="From 2016-03-08 15:31:18 \nTo 2016-03-08 18:31:18 "/>
 
     <Button
         android:id="@+id/activity_trip_detail_button_view_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:layout_marginEnd="20dp"
         android:text="@string/map"
+        android:textColor="@android:color/white"
+        android:stateListAnimator="@null"
+        android:background="@drawable/background_map_button"
         android:layout_alignBaseline="@id/activity_trip_detail_textview_timestamp"
         android:layout_alignParentEnd="true"/>
     <LinearLayout
@@ -83,6 +77,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="No"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
             style="@style/AppTheme.Stamp.Header"/>
         <TextView
             android:layout_width="0dp"
@@ -97,17 +92,26 @@
             style="@style/AppTheme.Stamp.Header"/>
         <TextView
             android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/longitude_short"
+            android:layout_height="wrap_content"
+            android:text="@string/longitude_short"
             style="@style/AppTheme.Stamp.Header"/>
     </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/activity_trip_detail_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="vertical"
-        android:layout_above="@id/activity_trip_detail_button_bar"
+        android:scrollbarThumbVertical="@drawable/scrollbar"
+        android:scrollbarSize="4dp"
+        android:layout_alignParentBottom="true"
         android:layout_below="@id/activity_trip_detail_linear_layout_header"/>
 
-
+    <com.travelmapi.app.travelmapi_app.views.MainMenu
+        android:id="@+id/activity_trip_detail_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/activity_trip_detail_title"
+        android:layout_marginTop="4dp"
+        android:layout_below="@id/activity_trip_detail_logo"/>
 </RelativeLayout>

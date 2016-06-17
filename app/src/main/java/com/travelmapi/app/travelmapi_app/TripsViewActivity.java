@@ -1,14 +1,23 @@
 package com.travelmapi.app.travelmapi_app;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Button;
+import com.travelmapi.app.travelmapi_app.alarms.AlarmReceiver;
+import com.travelmapi.app.travelmapi_app.alarms.SyncReceiver;
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import java.util.ArrayList;
@@ -23,31 +32,80 @@ import io.realm.RealmList;
 public class TripsViewActivity extends AppCompatActivity implements TripRecyclerViewAdapter.OnTripRowClickListener{
 
     public static final String ARG_TRIP = "ARG_TRIP";
-    TripRecyclerViewAdapter mAdapter;
+    private static final int PERMISSION_FINE_LOCATION = 0;
+    private TripRecyclerViewAdapter mAdapter;
+
+    private PendingIntent pendingIntent;
 
     @BindView(R.id.activity_trips_view_recycler_view)
     RecyclerView mRecycler;
-
-    @BindView(R.id.button_list_travel_list)
-    Button mTravel;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trips_view);
         ButterKnife.bind(this);
+
+
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSION_FINE_LOCATION);
+        }else{
+            startAlarm();
+        }
+
+        //remove when removing logging to file
+        if( ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) !=PackageManager.PERMISSION_GRANTED ){
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_FINE_LOCATION);
+            ApplicationSingleton.createFileOnDevice(true);
+        }
+
         mAdapter = new TripRecyclerViewAdapter(this);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setItemAnimator(new DefaultItemAnimator());
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
+    }
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mTravel.setBackground(getDrawable(R.drawable.bordered_background_active));
-            mTravel.setTextColor(Color.WHITE);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch(requestCode){
+            case 0:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    startAlarm();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                break;
+
         }
     }
+
+    private void startAlarm() {
+        Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
+
+        Intent syncIntent = new Intent(getApplicationContext(), SyncReceiver.class);
+        PendingIntent syncPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, syncIntent, 0);
+
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        SharedPreferences preferences = getSharedPreferences(SettingsActivity.PREFERENCES, MODE_PRIVATE);
+
+        long syncInterval = preferences.getLong(SettingsActivity.ARG_UPDATE_INTERVAL, 60 * 1000);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
+            manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + syncInterval, syncPendingIntent);
+        }else{
+            manager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),pendingIntent );
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), syncInterval, syncPendingIntent);
+        }
+    }
+
 
     @OnClick(R.id.activity_trips_view_button_delete)
     void deleteClick(){
@@ -94,24 +152,10 @@ public class TripsViewActivity extends AppCompatActivity implements TripRecycler
         intent.putExtra(ARG_TRIP, trip.getId());
         startActivity(intent);
     }
-    @OnClick(R.id.button_list_travel_list)
-    void listClick(){
-    }
 
-    @OnClick(R.id.button_list_settings)
-    void settingsClick(){
-        Intent intent = new Intent(this, SettingsActivity.class);
+    @OnClick(R.id.activity_trips_view_button_add)
+    void addClick(){
+        Intent intent = new Intent(this, StartTravelActivity.class);
         startActivity(intent);
-        finish();
-    }
-
-    @OnClick(R.id.button_list_start_travel)
-    void travelClick(){
-        finish();
-    }
-
-    @OnClick(R.id.button_list_show_log)
-    void logClick(){
-
     }
 }

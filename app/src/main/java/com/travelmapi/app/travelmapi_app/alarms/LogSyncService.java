@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -33,7 +34,7 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
     public static final String URL = "http://app.travelmapi.com?controller=stamp&action=upload";
     public static final String DEBUG_URL = "http://10.0.2.2?controller=stamp&action=upload";
     private static final String TAG = LogSyncService.class.getSimpleName();
-
+    public static final int TIMEOUT_INTERVAL = 15000;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -76,6 +77,12 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
 
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, URL, json, this, this);
 
+
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                TIMEOUT_INTERVAL,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         ApplicationSingleton.getInstance().getRequestQueue().add(request);
         return START_STICKY;
     }
@@ -95,7 +102,7 @@ public class LogSyncService extends Service implements Response.ErrorListener, R
         Log.d(TAG, response.toString());
         Realm realm = Realm.getDefaultInstance();
         try {
-            JSONArray results = response;//response.getJSONArray("data");
+            JSONArray results = response;
             for(int i = 0; i < results.length(); i++){
                 JSONObject resStamp = results.getJSONObject(i);
                 int stampId = resStamp.getInt("stamp_id");

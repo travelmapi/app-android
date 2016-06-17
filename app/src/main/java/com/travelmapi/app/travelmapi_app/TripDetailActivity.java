@@ -9,19 +9,24 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.travelmapi.app.travelmapi_app.models.TravelStamp;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import com.travelmapi.app.travelmapi_app.models.TripHelper;
+
 import java.util.Date;
 import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
-public class TripDetailActivity extends AppCompatActivity implements StampRecyclerViewAdapter.StampRowClickListener, EditNameFragment.OnFragmentCompleteListener, EditDateDialogFragment.DialogCompleteListener, DateTimeDialogFragment.OnDialogCompleteListener {
+public class TripDetailActivity extends AppCompatActivity implements StampRecyclerViewAdapter.StampRowClickListener, EditNameFragment.OnFragmentCompleteListener, EditDateDialogFragment.DialogCompleteListener, DateTimeDialogFragment.OnDialogCompleteListener, RealmChangeListener {
 
     private static final int FLAG_START = 0;
     private static final int FLAG_END = 1;
@@ -35,57 +40,51 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
     @BindView(R.id.activity_trip_detail_textview_timestamp)
     Button mTimestamp;
 
-    @BindView(R.id.button_list_show_log)
-    Button mLog;
+    @BindView((R.id.activity_trip_detail_image_active))
+    ImageView mActive;
 
-    @BindView(R.id.activity_trip_detail_textview_logs)
-    TextView mNumLogs;
 
-    @BindView(R.id.activity_trip_detail_textview_active)
-    TextView mActive;
+    private RealmList<TravelStamp> tStamps;
 
-    StampRecyclerViewAdapter mAdapter;
-    Trip mTrip;
+    private StampRecyclerViewAdapter mAdapter;
+
+    private Trip mTrip;
+
+    private String mTripId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_detail);
         ButterKnife.bind(this);
-        String tripId = getIntent().getStringExtra(TripsViewActivity.ARG_TRIP);
+        mTripId = getIntent().getStringExtra(TripsViewActivity.ARG_TRIP);
 
         //get all travel stamps
-        Realm realm = Realm.getDefaultInstance();
-        mTrip = realm.where(Trip.class).equalTo("id", tripId).findFirst();
-        RealmList<TravelStamp> stamps = mTrip.getStamps();
-        RealmList<TravelStamp> tStamps = new RealmList<>();
-        //reverse order of stamps
-        for(int i = stamps.size() -1; i >= 0; i--){
-            tStamps.add(stamps.get(i));
-        }
+        getStamps();
 
-        if(TripHelper.active(mTrip)){
-            mActive.setText(R.string.active);
-        }else{
-            mActive.setText(R.string.inactive);
+        Realm realm = Realm.getDefaultInstance();
+        realm.addChangeListener(this);
+
+        if(!TripHelper.active(mTrip)){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mActive.setBackground(getDrawable(R.drawable.inactive_trip));
+            }else{
+                mActive.setBackgroundDrawable(getResources().getDrawable(R.drawable.inactive_trip));
+            }
         }
 
         mAdapter = new StampRecyclerViewAdapter(tStamps, this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mName.setText(mTrip.getName());
-        mNumLogs.setText(String.format(getString(R.string.num_logs), mTrip.getStamps().size()));
-        String start = new DateHandler(mTrip.getStart()).toString();
-        String end = new DateHandler(mTrip.getEnd()).toString();
+        String start = new DateHandler(mTrip.getStart()).toShortString();
+        String end = new DateHandler(mTrip.getEnd()).toShortString();
         String timestamp = "From: " + start +"\nTo: " + end;
         mTimestamp.setText(timestamp);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mLog.setBackground(getDrawable(R.drawable.bordered_background_active));
-            mLog.setTextColor(Color.WHITE);
-        }
-
     }
+
+
 
     @Override
     public void onStampRowClick(TravelStamp stamp) {
@@ -94,18 +93,6 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
         startActivity(intent);
     }
 
-    @OnClick(R.id.button_list_travel_list)
-    void listClick(){
-        finish();
-
-    }
-
-    @OnClick(R.id.button_list_settings)
-    void settingsClick(){
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
-        finish();
-    }
 
     @OnClick(R.id.activity_trip_detail_button_trip_name)
     void onNameClick(){
@@ -114,11 +101,6 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
         edit.setOnFragmentCompleteListener(this);
         edit.setName(mTrip.getName());
         edit.show(manager, "edit_name_dialog");
-    }
-
-    @OnClick(R.id.button_list_start_travel)
-    void travelClick(){
-        finish();
     }
 
     @OnClick(R.id.activity_trip_detail_button_view_map)
@@ -154,7 +136,7 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
             dialog.setOnDateTimeSetListener(this);
             dialog.setFlag(FLAG_START);
             dialog.setDate(mTrip.getStart());
-            dialog.show(manager, "date_time_dialog_fragment");    
+            dialog.show(manager, "date_time_dialog_fragment");
         }else{
 
             android.app.FragmentManager manager = getFragmentManager();
@@ -192,5 +174,27 @@ public class TripDetailActivity extends AppCompatActivity implements StampRecycl
             String timestamp = "From: " + start +"\nTo: " + end;
             mTimestamp.setText(timestamp);
         }
+    }
+
+    @Override
+    public void onChange() {
+        getStamps();
+        mAdapter = new StampRecyclerViewAdapter(tStamps, this);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+
+    private void getStamps(){
+        Realm realm = Realm.getDefaultInstance();
+        mTrip = realm.where(Trip.class).equalTo("id", mTripId).findFirst();
+        RealmList<TravelStamp> stamps = mTrip.getStamps();
+        tStamps = new RealmList<>();
+        //reverse order of stamps
+        for(int i = stamps.size() -1; i >= 0; i--){
+            tStamps.add(stamps.get(i));
+        }
+
+
     }
 }

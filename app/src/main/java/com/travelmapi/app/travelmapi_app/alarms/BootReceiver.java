@@ -37,15 +37,14 @@ public class BootReceiver extends BroadcastReceiver {
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             SharedPreferences pref = context.getSharedPreferences(SettingsActivity.PREFERENCES, Context.MODE_PRIVATE);
 
-            long logInterval = pref.getLong(SettingsActivity.ARG_TRACKER_INTERVAL, 15000);
             long syncInterval = pref.getLong(SettingsActivity.ARG_UPDATE_INTERVAL, 60 * 1000);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 //set exact alarms for kitkat and above
-                manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+logInterval, pendingIntent);
+                manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
                 manager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+syncInterval, syncPendingIntent);
             }else{
                 //set exact alarm for bellow kitkat
-                manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), logInterval, pendingIntent);
+                manager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),pendingIntent );
                 manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), syncInterval, syncPendingIntent);
             }
 

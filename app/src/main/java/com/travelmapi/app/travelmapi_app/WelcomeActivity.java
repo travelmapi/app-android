@@ -18,7 +18,7 @@ public class WelcomeActivity extends AppCompatActivity {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                Intent intent = new Intent(WelcomeActivity.this, StartTravelActivity.class);
+                Intent intent = new Intent(WelcomeActivity.this, TripsViewActivity.class);
                 startActivity(intent);
                 finish();
             }

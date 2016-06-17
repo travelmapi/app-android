@@ -1,11 +1,13 @@
 package com.travelmapi.app.travelmapi_app;
 
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.travelmapi.app.travelmapi_app.models.Trip;
 import com.travelmapi.app.travelmapi_app.models.TripHelper;
@@ -44,18 +46,20 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
     public void onBindViewHolder(final TripViewHolder holder, int position) {
         Trip trip = mTrips.get(position);
         holder.title.setText(trip.getName());
-        String dates = String.format("From: %s\nTo: %s",new DateHandler(trip.getStart()).toString(), new DateHandler(trip.getEnd()).toString());
+        String dates = String.format("From: %s to %s",new DateHandler(trip.getStart()).toShortString(), new DateHandler(trip.getEnd()).toShortString());
         holder.dates.setText(dates);
         holder.check.setChecked(selected.contains(position));
         holder.check.setOnClickListener(this);
         holder.check.setTag(trip);
-        if(TripHelper.active(trip)){
-            holder.active.setText(R.string.active);
-        }else{
-            holder.active.setText(R.string.inactive);
+
+        if(!TripHelper.active(trip)){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                holder.active.setBackground(holder.fullView.getContext().getDrawable(R.drawable.inactive_trip));
+            }else{
+                holder.active.setBackgroundDrawable(holder.fullView.getResources().getDrawable(R.drawable.inactive_trip));
+            }
         }
-        String logs = String.format("%d Logs",trip.getStamps().size());
-        holder.logs.setText(logs);
+
         holder.fullView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,7 +88,8 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
     }
 
     static class TripViewHolder extends RecyclerView.ViewHolder {
-        TextView title, dates, active, logs;
+        TextView title, dates;
+        ImageView active;
         CheckBox check;
         View fullView;
         public TripViewHolder(View itemView) {
@@ -92,8 +97,7 @@ public class TripRecyclerViewAdapter extends RecyclerView.Adapter<TripRecyclerVi
             title = (TextView) itemView.findViewById(R.id.row_trip_textview_title);
             dates = (TextView) itemView.findViewById(R.id.row_trip_textview_dates);
             check = (CheckBox) itemView.findViewById(R.id.row_trip_checkbox_delete);
-            active = (TextView) itemView.findViewById(R.id.row_trip_textview_active);
-            logs = (TextView) itemView.findViewById(R.id.row_trip_textview_logs);
+            active = (ImageView) itemView.findViewById(R.id.row_trip_image_active);
             fullView = itemView;
         }
     }
